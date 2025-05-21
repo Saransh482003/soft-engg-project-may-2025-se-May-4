@@ -57,6 +57,51 @@ def find_doctors_by_specialty(lat, lon, disease_name, radius=5000):
     # print(matched_places)
     return matched_places
 
+def find_pharmacies(lat, lon, radius=10000):
+    overpass_url = "http://overpass-api.de/api/interpreter"
+    
+    query = f"""
+    [out:json];
+    node["amenity"="pharmacy"](around:{radius},{lat},{lon});
+    out center;
+    """
+    
+    response = requests.get(overpass_url, params={'data': query})
+    data = response.json()
+
+    pharmacies = []
+    for el in data["elements"]:
+        tags = el.get("tags", {})
+        name = tags.get("name", "Unnamed Pharmacy")
+
+        address_parts = [
+            tags.get("addr:housenumber", ""),
+            tags.get("addr:street", ""),
+            tags.get("addr:city", ""),
+            tags.get("addr:postcode", ""),
+        ]
+        full_address = ", ".join(part for part in address_parts if part)
+        
+        pharmacies.append({
+            "name": name,
+            "address": full_address or "Address not available",
+            "lat": el.get("lat") or el.get("center", {}).get("lat"),
+            "lon": el.get("lon") or el.get("center", {}).get("lon"),
+        })
+    return pharmacies
+
+
+@app.route("/nearby-pharmacies", methods=["POST"])
+def nearby_pharmacies():
+    data = request.json
+    lat = data.get("latitude")
+    lon = data.get("longitude")
+
+    results = find_pharmacies(lat, lon)
+    return jsonify(results)
+
+
+
 @app.route("/")
 def serve_index():
     return send_from_directory("static", "index.html")
