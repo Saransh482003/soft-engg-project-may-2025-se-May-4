@@ -16,7 +16,7 @@ class unittest:
             self.func=func
         self.expected,self.tc=expected,tc
         if len(expected)!=len(tc):
-            raise UnequalTestSetException
+            raise UnequalTestSetException()
     def __str__(self):
         if self.state:
             return "Pass"
