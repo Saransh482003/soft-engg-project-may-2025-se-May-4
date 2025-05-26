@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nearby Finder</title>
+</head>
+<body>
+  <h2>Find Nearby Facilities</h2>
+  <button onclick="getLocation('hospital')">Find Hospitals</button>
+  <button onclick="getLocation('pharmacy')">Find Pharmacies</button>
+  <div id="result"></div>
+
+  <script>
+    function getLocation(type) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => sendToBackend(position, type),
+          showError
+        );
+      } else {
+        document.getElementById("result").innerHTML = "Geolocation not supported.";
+      }
+    }
+
+    function sendToBackend(position, type) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      let endpoint = type === 'pharmacy' ? "/nearby-pharmacies" : "/nearby-hospitals";
+
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ latitude: lat, longitude: lon })
+      })
+      .then(response => response.json())
+      .then(data => {
+        let html = "<ul>";
+        if (data.length === 0) {
+          html += `<li>No ${type}s found nearby.</li>`;
+        } else {
+          data.forEach(place => {
+            html += `<li><strong>${place.name}</strong><br>📍 ${place.address}</li>`;
+          });
+        }
+        html += "</ul>";
+        document.getElementById("result").innerHTML = html;
+      })
+      .catch(error => {
+        document.getElementById("result").innerHTML = "Error: " + error;
+      });
+    }
+
+    function showError(error) {
+      document.getElementById("result").innerHTML = `Geolocation error: ${error.message}`;
+    }
+  </script>
+
+  <h2>Set Medicine Reminder</h2>
+    <form method="post" action="/set-reminder">
+        Email: <input type="email" name="email" required><br><br>
+        Medicine: <input type="text" name="medicine" required><br><br>
+        Dosage: <input type="text" name="dosage" required><br><br>
+        Reminder Time (ISO): <input type="datetime-local" name="remind_at" required><br><br>
+        <input type="submit" value="Set Reminder">
+    </form>
+</body>
+</html>
