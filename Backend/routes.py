@@ -1,7 +1,67 @@
 import requests
-from flask import  request, jsonify, send_from_directory
-
+from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
+from config import db,app
+from models import *
 def configure_routes(app):
+
+    @app.route('/logout', methods=['GET'])
+    def logout():
+        try:
+            session.clear()  # Clear the session
+            return jsonify({'msg': 'Logged out successfully', 'status': 'success'}), 200
+        except Exception as e:
+            return jsonify({'msg': str(e), 'status': 'error'}), 500
+
+    @app.route('/register/user', methods=['POST'])
+    def register_customer():
+        data = request.form  
+
+        # Extract data from the request
+        name = data.get('name')
+        email = data.get('email')
+        mobile = data.get('mobile')
+        username = data.get('username')
+        password = data.get('password')
+        address = data.get('address')
+        pin = data.get('pin')   
+        age=data.get('age')
+        gender=data.get('gender')
+        dob=data.get('dob')
+        # Basic validation
+        if not all([name, email, mobile, username, password, address, pin,age,gender,dob]):
+            return jsonify({'msg': 'Missing required fields', 'status': 'fail'}), 400
+
+        # Check if the username or email already exists
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            return jsonify({'msg': 'User with this email or username already exists', 'status': 'fail'}), 400
+
+
+        # Create a new customer
+        try:
+            new_customer = User(
+                name=name,
+                email=email,
+                mobile=mobile,
+                username=username,
+                password=password,
+                address=address,
+                pin=pin,
+                age=age,
+                gender=gender,
+                dob=datetime.strptime(dob, "%Y-%m-%d").date() if dob else None
+                )
+            
+            db.session.add(new_customer)
+            db.session.commit()
+
+            return jsonify({'msg': 'Customer registered successfully', 'status': 'success'}), 201
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'msg': f'Error occurred: {str(e)}', 'status': 'fail'}), 500
+
+
 
     @app.route("/nearby-hospitals", methods=["POST"])
     def nearby_hospitals():

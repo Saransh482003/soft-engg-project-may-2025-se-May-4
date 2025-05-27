@@ -63,5 +63,39 @@
         Reminder Time (ISO): <input type="datetime-local" name="remind_at" required><br><br>
         <input type="submit" value="Set Reminder">
     </form>
+
+     <h2>Set Medicine Reminder</h2>
+  <form method="post" action="/set-reminder">
+    Email: <input type="email" name="email" required><br><br>
+    Medicine: <input type="text" name="medicine" required><br><br>
+    Dosage: <input type="text" name="dosage" required><br><br>
+    Reminder Time (ISO): <input type="datetime-local" name="remind_at" required><br><br>
+    <input type="submit" value="Set Reminder">
+  </form>
+
+  <h2>Register User</h2>
+  <form method="post" action="/register/user">
+    Name: <input type="text" name="name" required><br><br>
+    Email: <input type="email" name="email" required><br><br>
+    Mobile: <input type="text" name="mobile" required><br><br>
+    Username: <input type="text" name="username" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+
+    Address: <input type="text" name="address"><br><br>
+    PIN: <input type="text" name="pin"><br><br>
+
+    Age: <input type="number" name="age"><br><br>
+    Gender:
+    <select name="gender">
+      <option value="">Select</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select><br><br>
+
+    Date of Birth: <input type="date" name="dob"><br><br>
+
+    <input type="submit" value="Register">
+  </form>
 </body>
 </html>
