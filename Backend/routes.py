@@ -12,6 +12,33 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({'msg': str(e), 'status': 'error'}), 500
 
+
+    @app.route('/login', methods=['POST'])
+    def login():
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
+        # Query the user by username
+        user = User.query.filter_by(username=username).first()
+
+        if user is None:
+            return jsonify({'msg': 'User not found', 'status': 'fail'}), 401
+
+        if user.password== password:
+            session['user_id'] = user.id  # Save user ID in the session
+            return jsonify({
+                        'msg': f'login successful', 
+                        'status': 'success', 
+                        'user': {
+                            'id': user.id,
+                            'name': user.name,
+                            'email': user.email
+                        }
+                    }), 200
+        else:
+            return jsonify({'msg': 'Invalid credentials or role', 'status': 'fail'}), 401
+
     @app.route('/register/user', methods=['POST'])
     def register_customer():
         data = request.form  
