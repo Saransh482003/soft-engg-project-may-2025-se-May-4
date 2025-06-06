@@ -8,8 +8,26 @@
   <button onclick="getLocation('hospital')">Find Hospitals</button>
   <button onclick="getLocation('pharmacy')">Find Pharmacies</button>
   <div id="result"></div>
+  <div id="chatbox"></div>
+<input type="text" id="userInput" placeholder="Ask something..." />
+<button onclick="sendMessage()">Send</button>
 
   <script>
+async function sendMessage() {
+        const msg = document.getElementById("userInput").value;
+        document.getElementById("chatbox").innerHTML += `<p><strong>You:</strong> ${msg}</p>`;
+
+        const res = await fetch("/chatbot", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg })
+        });
+
+        const data = await res.json();
+        document.getElementById("chatbox").innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+        document.getElementById("userInput").value = '';
+    }
+
     function getLocation(type) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
