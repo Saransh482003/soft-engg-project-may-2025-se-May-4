@@ -1,119 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Nearby Finder</title>
-</head>
-<body>
-  <h2>Find Nearby Facilities</h2>
-  <button onclick="getLocation('hospital')">Find Hospitals</button>
-  <button onclick="getLocation('pharmacy')">Find Pharmacies</button>
-  <div id="result"></div>
-  <div id="chatbox"></div>
-<input type="text" id="userInput" placeholder="Ask something..." />
-<button onclick="sendMessage()">Send</button>
-
-  <script>
-async function sendMessage() {
-        const msg = document.getElementById("userInput").value;
-        document.getElementById("chatbox").innerHTML += `<p><strong>You:</strong> ${msg}</p>`;
-
-        const res = await fetch("/chatbot", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-        });
-
-        const data = await res.json();
-        document.getElementById("chatbox").innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
-        document.getElementById("userInput").value = '';
-    }
-
-    function getLocation(type) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => sendToBackend(position, type),
-          showError
-        );
-      } else {
-        document.getElementById("result").innerHTML = "Geolocation not supported.";
-      }
-    }
-
-    function sendToBackend(position, type) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      let endpoint = type === 'pharmacy' ? "/nearby-pharmacies" : "/nearby-hospitals";
-
-      fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ latitude: lat, longitude: lon })
-      })
-      .then(response => response.json())
-      .then(data => {
-        let html = "<ul>";
-        if (data.length === 0) {
-          html += `<li>No ${type}s found nearby.</li>`;
-        } else {
-          data.forEach(place => {
-            html += `<li><strong>${place.name}</strong><br>📍 ${place.address}</li>`;
-          });
-        }
-        html += "</ul>";
-        document.getElementById("result").innerHTML = html;
-      })
-      .catch(error => {
-        document.getElementById("result").innerHTML = "Error: " + error;
-      });
-    }
-
-    function showError(error) {
-      document.getElementById("result").innerHTML = `Geolocation error: ${error.message}`;
-    }
-  </script>
-
-  <h2>Set Medicine Reminder</h2>
-    <form method="post" action="/set-reminder">
-        Email: <input type="email" name="email" required><br><br>
-        Medicine: <input type="text" name="medicine" required><br><br>
-        Dosage: <input type="text" name="dosage" required><br><br>
-        Reminder Time (ISO): <input type="datetime-local" name="remind_at" required><br><br>
-        <input type="submit" value="Set Reminder">
-    </form>
-
-     <h2>Set Medicine Reminder</h2>
-  <form method="post" action="/set-reminder">
-    Email: <input type="email" name="email" required><br><br>
-    Medicine: <input type="text" name="medicine" required><br><br>
-    Dosage: <input type="text" name="dosage" required><br><br>
-    Reminder Time (ISO): <input type="datetime-local" name="remind_at" required><br><br>
-    <input type="submit" value="Set Reminder">
-  </form>
-
-  <h2>Register User</h2>
-  <form method="post" action="/register/user">
-    Name: <input type="text" name="name" required><br><br>
-    Email: <input type="email" name="email" required><br><br>
-    Mobile: <input type="text" name="mobile" required><br><br>
-    Username: <input type="text" name="username" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
-
-    Address: <input type="text" name="address"><br><br>
-    PIN: <input type="text" name="pin"><br><br>
-
-    Age: <input type="number" name="age"><br><br>
-    Gender:
-    <select name="gender">
-      <option value="">Select</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select><br><br>
-
-    Date of Birth: <input type="date" name="dob"><br><br>
-
-    <input type="submit" value="Register">
-  </form>
-</body>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
