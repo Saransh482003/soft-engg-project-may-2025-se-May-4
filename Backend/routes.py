@@ -2,21 +2,25 @@ import requests
 from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
 from config import db,app
 from models import *
-from chatbot import get_chatbot_response
+from modules.chatbot import get_chatbot_response
 
 
 def configure_routes(app):
+    @app.route('/')
+    def home():
+        return jsonify({'message': 'Welcome to the Shravan API!'}), 200
 
     @app.route('/chatbot', methods=['POST'])
     def chatbot():
-        user_input = request.json.get('message', '')
-        if not user_input.strip():
+        data = request.get_json()
+        user_input = data.get('message', '').strip()
+
+        if user_input is None or user_input == '':
             return jsonify({'response': 'Please enter a valid message.'}), 400
 
         try:
-            print("called")
             reply = get_chatbot_response(user_input)
-            return jsonify({'response': reply})
+            return jsonify({'response': reply}), 200
         except Exception as e:
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
