@@ -4,7 +4,7 @@ from groq import Groq
 
 # Set your Groq API key
 load_dotenv()
-api_key = "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"
+api_key = os.getenv("GROQ_API_KEY")
 
 
 client = Groq(
