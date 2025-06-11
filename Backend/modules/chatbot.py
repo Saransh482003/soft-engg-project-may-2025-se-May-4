@@ -1,11 +1,18 @@
 import os
 from dotenv import load_dotenv
 from groq import Groq
+import json
 
 # Set your Groq API key
 load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+api_key = "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"
 
+# if not api_key:
+#     try:
+#         with open("authorization.json", "r") as f:
+#             api_key = json.load(f)["GROQ_API_KEY"]
+#     except Exception:
+#         api_key = "your-groq-api-key-here"
 
 client = Groq(
     api_key=api_key,
