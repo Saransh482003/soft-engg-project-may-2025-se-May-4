@@ -36,6 +36,41 @@ const router = createRouter({
       component: () => import('../views/TertiaryUserDashboard.vue'),
     },
     {
+      path: '/chatbot',
+      name: 'chatbot',
+      component: () => import('../views/Chatbot.vue'),
+    },
+    {
+      path: '/emergencysos',
+      name: 'emergencysos',
+      component: () => import('../views/EmergencySOS.vue'),
+    },
+    {
+      path: '/medicinereminders',
+      name: 'medicinereminders',
+      component: () => import('../views/MedicineReminders.vue'),
+    },
+    {
+      path: '/doctorfinder',
+      name: 'doctorfinder',
+      component: () => import('../views/Doctorfinder.vue'),
+    },
+    {
+      path: '/videos',
+      name: 'videos',
+      component: () => import('../views/Yogavideos.vue'),
+    },
+    {
+      path: '/pharmacyfinder',
+      name: 'pharmacyfinder',
+      component: () => import('../views/pharmacyfinder.vue'),
+    },
+    {
+      path: '/missedmedicinealert',
+      name: 'missedmedicinealert',
+      component: () => import('../views/missedmedicinealerts.vue'),
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting

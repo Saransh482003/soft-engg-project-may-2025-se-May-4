@@ -25,9 +25,9 @@ async function onSubmit() {
     if (resp.status && role === 'user') {
       router.push({ path: '/userdashboard' });
     } else if (resp.status && role === 'caretaker') {
-      router.push({ path: '/caretakerdashboard' });
+      router.push({ path: '/caretaker' });
     } else if (resp.status && role === 'ngo') {
-      router.push({ path: '/ngodashboard' });
+      router.push({ path: '/tertiaryuser' });
     } else {
       router.push({ path: '/' });
     }

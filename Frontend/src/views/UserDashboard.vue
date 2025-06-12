@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import EmergencySOS from './EmergencySOS.vue';
 
 const router = useRouter();
 const isDarkMode = ref(false);
@@ -19,22 +20,14 @@ function goToFeature(path) {
   <div class="dashboard-container" :class="{ 'dark': isDarkMode }">
     <h1 class="text-center">👵 Welcome to SHARVAN Dashboard</h1>
     <p class="text-center subtitle">Empowering your golden years with technology</p>
-
-    <div class="toggle-mode">
-      <button @click="toggleDarkMode" class="btn btn-secondary">
-        {{ isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
-      </button>
-    </div>
-
+     <EmergencySOS /><br>
     <div class="grid-container">
-      <div class="card" @click="goToFeature('/medicine-reminders')">💊 Medicine Reminders</div>
+      <div class="card" @click="goToFeature('/medicinereminders')">💊 Medicine Reminders</div>
       <div class="card" @click="goToFeature('/doctor-finder')">🩺 Doctor Finder</div>
-      <div class="card" @click="goToFeature('/voice-chatbot')">🗣️ Voice-Based Chatbot</div>
+      <div class="card" @click="goToFeature('/chatbot')">🗣️ Voice-Based Chatbot</div>
       <div class="card" @click="goToFeature('/yoga-videos')">🧘‍♀️ Age-Friendly Yoga</div>
-      <div class="card" @click="goToFeature('/chatbot-settings')">🎭 Customize Chatbot</div>
       <div class="card" @click="goToFeature('/pharmacy-locator')">🏪 Pharmacy Locator</div>
       <div class="card" @click="goToFeature('/voice-reminders')">🗨️ Set Reminders by Voice</div>
-      <div class="card" @click="goToFeature('/emergency')">🚨 Emergency Contact</div>
       <div class="card" @click="toggleDarkMode">🌓 Toggle Dark Mode</div>
     </div>
   </div>
