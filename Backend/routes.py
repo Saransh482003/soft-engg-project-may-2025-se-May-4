@@ -1,6 +1,6 @@
 import requests
-from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
-from config import db,app
+from flask import Flask, request, session, jsonify
+from config import db, app
 from models import *
 from modules.chatbot import get_chatbot_response
 
@@ -10,13 +10,13 @@ def configure_routes(app):
     def home():
         return jsonify({'message': 'Welcome to the Shravan API!'}), 200
 
-    @app.route('/chatbot', methods=['POST'])
+    @app.route('/api/chatbot', methods=['POST'])
     def chatbot():
         data = request.get_json()
-        user_input = data.get('message', '').strip()
+        user_input = data.get('question', '').strip()
 
         if user_input is None or user_input == '':
-            return jsonify({'response': 'Please enter a valid message.'}), 400
+            return jsonify({'response': 'Please enter a valid question.'}), 400
 
         try:
             reply = get_chatbot_response(user_input)
