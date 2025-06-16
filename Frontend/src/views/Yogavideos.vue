@@ -52,18 +52,19 @@ const yogaVideos = ref([
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #4caf50;
-  color: white;
+  background-color: #ffe6f0;
+  color: black;
   padding: 10px 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 .home-btn {
   text-decoration: none;
-  color: white;
-  background: #388e3c;
+  color: black;
+  background: #ffe6f0;
   padding: 6px 12px;
   border-radius: 5px;
+  font-size: larger;
 }
 .video-grid {
   display: grid;
@@ -72,7 +73,7 @@ const yogaVideos = ref([
 }
 .video-card {
   background: #f0f0f0;
-  border-left: 5px solid #4caf50;
+  border-left: 5px solid #ffe6f0;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -86,13 +87,13 @@ const yogaVideos = ref([
 .play-btn {
   display: inline-block;
   margin-top: 8px;
-  background: #4caf50;
-  color: white;
+  background: #ffe6f0;
+  color: black;
   padding: 8px 12px;
   border-radius: 5px;
   text-decoration: none;
 }
 .play-btn:hover {
-  background: #388e3c;
+  background: #ffe6f0;
 }
 </style>

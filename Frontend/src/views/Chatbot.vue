@@ -1,12 +1,9 @@
 <template>
   <nav class="navbar navbar-dark bg-primary fixed-top">
-  <div class="container-fluid">
-    <RouterLink class="btn btn-outline-light" to="/userdashboard">🏠 Home</RouterLink>
-  </div>
+    <RouterLink class="home-btn" to="/userdashboard">🏠 Home</RouterLink>
+     <h2>🎙️ SHARVAN Voice/Text Chatbot</h2>
   </nav>
   <div class="chatbot-container">
-    <h2 class="text-center mb-3">🎙️ SHARVAN Voice/Text Chatbot</h2>
-
     <div class="chat-box mb-3 p-3">
       <div v-for="(msg, index) in messages" :key="index" :class="msg.sender">
         <strong>{{ msg.sender === 'user' ? '🧑 You:' : '🤖 Bot:' }}</strong> {{ msg.text }}
@@ -95,11 +92,30 @@ const startListening = () => {
 </script>
 
 <style scoped>
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffe6f0;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.home-btn {
+  text-decoration: none;
+  color: black;
+  background: #ffe6f0;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: larger;
+}
 .chatbot-container {
   max-width: 600px;
   margin: auto;
   padding: 1.5rem;
-  background-color: #f2f6f9;
+  background-color: #ffe6f0;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 }
@@ -123,8 +139,7 @@ const startListening = () => {
 .container-fluid{
   text-align: right;
 }
-.navbar{
-  background-color: lightblue;
-  font-size: larger;
+.form-control{
+  font-size: large;
 }
 </style>

@@ -49,18 +49,19 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #00897b;
-  color: white;
+  background-color: #ffe6f0;
+  color: black;
   padding: 10px 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 .home-btn {
   text-decoration: none;
-  color: white;
-  background: #00695c;
+  color: black;
+  background: #ffe6f0;
   padding: 6px 12px;
   border-radius: 5px;
+  font-size: larger;
 }
 .loading,
 .error {

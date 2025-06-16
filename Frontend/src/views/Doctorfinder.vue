@@ -80,18 +80,19 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #007bff;
-  color: white;
+  background-color: #ffe6f0;
+  color: black;
   padding: 10px 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 .home-btn {
   text-decoration: none;
-  color: white;
-  background: #0056b3;
+  color: black;
+  background: #ffe6f0;
   padding: 5px 10px;
   border-radius: 5px;
+  font-size: larger;
 }
 .doctor-list {
   display: grid;

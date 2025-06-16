@@ -27,7 +27,7 @@ function goToFeature(path) {
       <div class="card" @click="goToFeature('/chatbot')">🗣️ Voice-Based Chatbot</div>
       <div class="card" @click="goToFeature('/yoga-videos')">🧘‍♀️ Age-Friendly Yoga</div>
       <div class="card" @click="goToFeature('/pharmacy-locator')">🏪 Pharmacy Locator</div>
-      <div class="card" @click="goToFeature('/voice-reminders')">🗨️ Set Reminders by Voice</div>
+     <div class="card" @click="goToFeature('/voice-reminders')">🗨️ Set Reminders by Voice</div>
       <div class="card" @click="toggleDarkMode">🌓 Toggle Dark Mode</div>
     </div>
   </div>
@@ -35,10 +35,11 @@ function goToFeature(path) {
 
 <style scoped>
 .dashboard-container {
-  padding: 2rem;
-  background: linear-gradient(to right, #f0f8ff, #e6f7ff);
+  background: linear-gradient(to right, #ffe6f0, #f0f9ff);
   min-height: 100vh;
-  color: #333;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .dark {
@@ -70,7 +71,7 @@ h1 {
 
 .card {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 15px;
   padding: 1rem;
   text-align: center;
   font-size: 1.1rem;

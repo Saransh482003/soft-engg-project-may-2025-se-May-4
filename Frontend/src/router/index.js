@@ -41,34 +41,44 @@ const router = createRouter({
       component: () => import('../views/Chatbot.vue'),
     },
     {
-      path: '/emergencysos',
-      name: 'emergencysos',
-      component: () => import('../views/EmergencySOS.vue'),
-    },
-    {
       path: '/medicinereminders',
       name: 'medicinereminders',
       component: () => import('../views/MedicineReminders.vue'),
     },
     {
-      path: '/doctorfinder',
+      path: '/doctor-finder',
       name: 'doctorfinder',
       component: () => import('../views/Doctorfinder.vue'),
     },
     {
-      path: '/videos',
+      path: '/yoga-videos',
       name: 'videos',
       component: () => import('../views/Yogavideos.vue'),
     },
     {
-      path: '/pharmacyfinder',
-      name: 'pharmacyfinder',
+      path: '/pharmacy-locator',
+      name: 'pharmacy-locator',
       component: () => import('../views/pharmacyfinder.vue'),
     },
     {
       path: '/missedmedicinealert',
       name: 'missedmedicinealert',
       component: () => import('../views/missedmedicinealerts.vue'),
+    },
+    {
+      path: '/addmedicinealert',
+      name: 'addmedicinealert',
+      component: () => import('../views/Addmedicine.vue')
+    },
+    {
+      path: '/deletemedicinealert',
+      name: 'deletemedicinealert',
+      component: () => import('../views/Deletemedicine.vue')
+    },
+    {
+      path: '/voice-reminders',
+      name: 'voice-remainders',
+      component: () => import('../views/Voiceremainders.vue')
     },
     {
       path: '/about',
