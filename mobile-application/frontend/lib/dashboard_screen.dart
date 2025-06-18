@@ -659,20 +659,20 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Row(
+                                      const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          const Icon(
+                                          Icon(
                                             Icons.email_outlined,
                                             color: Colors.white70,
                                             size: 16,
                                           ),
-                                          const SizedBox(width: 8),
+                                          SizedBox(width: 8),
                                           Text(
                                             // userData["email"] ?? 'Loading...',
                                             "hq.sharavan@iitm.ac.in" ?? 'Loading...',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.white70,
                                             ),
@@ -1257,7 +1257,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               leading: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: (isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7) : ThemeConstants.primaryColor)?.withOpacity(0.1),
+                  color: (isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7) : ThemeConstants.primaryColor).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -1363,7 +1363,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    isExpired ? ThemeConstants.secondaryColor.withOpacity(0.6)! : ThemeConstants.primaryColor,
+                                    isExpired ? ThemeConstants.secondaryColor.withOpacity(0.6) : ThemeConstants.primaryColor,
                                   ),
                                 ),
                               ),
@@ -2066,7 +2066,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: (isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7): ThemeConstants.primaryColor)?.withOpacity(0.1),
+                color: (isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7): ThemeConstants.primaryColor).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(

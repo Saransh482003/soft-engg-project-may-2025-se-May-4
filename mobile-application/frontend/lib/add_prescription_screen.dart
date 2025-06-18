@@ -8,6 +8,7 @@ import 'theme_constants.dart';
 import 'constants.dart';
 import 'package:record/record.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'services/data_storage_service.dart';
 
 class AddPrescriptionScreen extends StatefulWidget {
   final String username;
@@ -94,38 +95,51 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/add-prescription'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': widget.username,
-          'password': widget.password,
-          'user_id': widget.userId,
-          'med_name': _medicineNameController.text,
-          'recommended_dosage': "None",
-          'side_effects': "None",
-          'frequency': int.parse(_frequencyController.text),
-          'expiry_date': _expiryDateController.text,
-        }),
-      );
+      // final response = await http.post(
+      //   Uri.parse('$baseUrl/add-prescription'),
+      //   headers: {'Content-Type': 'application/json'},
+      //   body: jsonEncode({
+      //     'username': widget.username,
+      //     'password': widget.password,
+      //     'user_id': widget.userId,
+      //     'med_name': _medicineNameController.text,
+      //     'recommended_dosage': "None",
+      //     'side_effects': "None",
+      //     'frequency': int.parse(_frequencyController.text),
+      //     'expiry_date': _expiryDateController.text,
+      //   }),
+      // );
 
-      if (response.statusCode == 200) {
-        if (mounted) {
+      final newPrescription = {
+        'pres_id': "None", // Use API response or generate ID
+        'medicine_id': "None",
+        'medicine_name': _medicineNameController.text,
+        'recommended_dosage': "None",
+        'side_effects': "None",
+        'frequency': int.parse(_frequencyController.text),
+        'expiry_date': _expiryDateController.text,
+        'user_id': "None",
+      };
+      
+      bool localSaveSuccess = await DataStorageService.addPrescription(newPrescription);
+      
+      if (mounted) {
+        if (localSaveSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Prescription added successfully'),
+              content: Text('Prescription added successfully and saved locally'),
               backgroundColor: ThemeConstants.primaryColor,
             ),
           );
-          Navigator.pop(context, true); // Return true to indicate success
-        }
-      } else {
-        if (mounted) {
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Failed to add prescription: ${response.body}')),
+            const SnackBar(
+              content: Text('Prescription added to server but failed to save locally'),
+              backgroundColor: Colors.orange,
+            ),
           );
         }
+        Navigator.pop(context, true); // Return true to indicate success
       }
     } catch (e) {
       if (mounted) {
