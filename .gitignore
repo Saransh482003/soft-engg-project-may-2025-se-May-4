@@ -4,5 +4,3 @@ __pycache__
 .env
 backend/env
 backend/__pycache__
-mobile-application
-final-mobile-apk
