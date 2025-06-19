@@ -4,6 +4,7 @@ from flask_cors import CORS
 import requests
 import os
 from models import *
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -13,13 +14,15 @@ app.config['SECRET_KEY'] = 'secret'
 CORS(app)
 db.init_app(app)
 
+with open("authentication.txt", "r") as file:
+    auth = json.loads(file.read())
 
 @app.route("/")
 def index():
     return {"message": "Welcome to the Shravan API!"}
 
 
-from routes import configure_routes
+from routes_functions import configure_routes
 from routes_user import routes_user
 
 configure_routes(app, db)
