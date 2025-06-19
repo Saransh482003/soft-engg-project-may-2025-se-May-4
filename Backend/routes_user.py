@@ -1,12 +1,11 @@
 import requests
 from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
-from app import db, app
 from models import *
 from modules.chatbot import get_chatbot_response
 from datetime import datetime
 import uuid
 
-def routes_user(app):
+def routes_user(app, db):
     
     # CREATE - Register a new user
     @app.route('/api/users', methods=['POST'])

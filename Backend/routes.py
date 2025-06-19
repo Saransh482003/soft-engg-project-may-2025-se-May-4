@@ -1,11 +1,10 @@
 import requests
 from flask import Flask, request, session, jsonify
-from config import db, app
 from models import *
 from modules.chatbot import get_chatbot_response
 
 
-def configure_routes(app):
+def configure_routes(app, db):
     @app.route('/')
     def home():
         return jsonify({'message': 'Welcome to the Shravan API!'}), 200
