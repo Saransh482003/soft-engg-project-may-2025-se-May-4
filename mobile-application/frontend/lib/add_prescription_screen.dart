@@ -84,6 +84,24 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
     return status.isGranted;
   }
 
+  String nextID(String id) {
+  // Extract components from the ID
+  String prefix = id.substring(0, 3);
+  String alpha = id.substring(3, 4);
+  String num = id.substring(4);
+  
+  if (num == "9999") {
+    // If number part is at maximum, increment the alpha character
+    int alphaCode = alpha.codeUnitAt(0);
+    String nextAlpha = String.fromCharCode(alphaCode + 1);
+    return "${prefix}${nextAlpha}0001";
+  } else {
+    // Increment the number part and pad with zeros
+    int nextNum = int.parse(num) + 1;
+    String paddedNum = nextNum.toString().padLeft(4, '0');
+    return "$prefix$alpha$paddedNum";
+  }
+}
   Future<void> _addPrescription() async {
     if (_medicineNameController.text.isEmpty ||
         _frequencyController.text.isEmpty ||
@@ -110,8 +128,10 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
       //   }),
       // );
 
+      lastPres = await DataStorageService.getLastPres();
+
       final newPrescription = {
-        'pres_id': "None", // Use API response or generate ID
+        'pres_id': nextID(lastPres['pres_id']),
         'medicine_id': "None",
         'medicine_name': _medicineNameController.text,
         'recommended_dosage': "None",
@@ -532,7 +552,8 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
                         icon: Icons.repeat,
                         keyboardType: TextInputType.number,
                       ),
-                      const SizedBox(height: 16),                      _buildInputField(
+                      const SizedBox(height: 16),                      
+                      _buildInputField(
                         controller: _expiryDateController,
                         label: 'Expiry Date',
                         icon: Icons.calendar_today,
@@ -604,7 +625,7 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
     if (picked != null) {
       setState(() {
         // Format the date as YYYY-MM-DD HH:MM:SS to match the expected format
-        _expiryDateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')} 00:00:00";
+        _expiryDateController.text = "${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year.toString().padLeft(4, '0')} 00:00:00";
       });
     }
   }

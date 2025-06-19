@@ -191,6 +191,16 @@ class DataStorageService {
     }
   }
 
+  static Future<List<dynamic>> getLastPres() async {
+    try {
+      final data = await getData();
+      return List<dynamic>.from(data['prescriptions']);
+    } catch (e) {
+      print('Error getting prescriptions: $e');
+      return [];
+    }
+  }
+
   /// Save prescriptions array (replaces entire prescriptions array)
   static Future<bool> savePrescriptions(List<dynamic> prescriptions) async {
     try {

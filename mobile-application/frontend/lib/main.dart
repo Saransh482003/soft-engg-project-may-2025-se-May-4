@@ -385,31 +385,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _performLogin(String username, String password, {bool isAutoLogin = false}) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-        }),
-      );
+      // final response = await http.post(
+      //   Uri.parse('$baseUrl/login'),
+      //   headers: {'Content-Type': 'application/json'},
+      //   body: jsonEncode({
+      //     'username': username,
+      //     'password': password,
+      //   }),
+      // );
+      if (username == "Shravan" && password == "shravan@pass") {
+        // final userData = jsonDecode(response.body);
+        // print(userData);
 
-      if (response.statusCode == 200) {
-        final userData = jsonDecode(response.body);
-        print(userData);
-        
         // Save credentials for future auto-login
-        await _saveCredentials(username, password);
         
+        await _saveCredentials(username, password);
         // Navigate to dashboard
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardScreen(
-              username: userData["username"] ?? username,
-              password: userData["password"] ?? password,
+              username: username,
+              password: password,
             ),
+          // MaterialPageRoute(
+          //   builder: (context) => DashboardScreen(
+          //     username: userData["username"] ?? username,
+          //     password: userData["password"] ?? password,
+          //   ),
           ),
         );
       } else {        
