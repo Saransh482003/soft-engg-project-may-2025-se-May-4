@@ -128,10 +128,10 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
       //   }),
       // );
 
-      lastPres = await DataStorageService.getLastPres();
+      final Map<String, String> lastPres = await DataStorageService.getLastPres();
 
       final newPrescription = {
-        'pres_id': nextID(lastPres['pres_id']),
+        'pres_id': nextID(lastPres['pres_id'] ?? 'PRSA0001'),
         'medicine_id': "None",
         'medicine_name': _medicineNameController.text,
         'recommended_dosage': "None",

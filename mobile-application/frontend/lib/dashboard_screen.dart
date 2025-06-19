@@ -609,7 +609,7 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                         child: Column(
                           children: [                            // Enhanced Profile Section with Modern Design
                             Container(
-                              margin: const EdgeInsets.only(top: 80),
+                              margin: const EdgeInsets.only(top: 88),
                               child: Stack(
                                 children: [
                                   // Background with sophisticated gradient
@@ -1591,7 +1591,7 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                 color: isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7) : ThemeConstants.primaryColor,
               ),
               onExpansionChanged: (expanded) async {
-                if (expanded && _medicineInfo.containsKey(presId)) {
+                if (expanded && !_medicineInfo.containsKey(presId)) {
                   try {
                     const apiKey = 'AIzaSyDChfe8INK6TpAJgFQ8gVKvSvf1Pgfiu6k';
                     const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey';
@@ -1629,11 +1629,12 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                     });
 
                     final response = await http.post(Uri.parse(url), headers: headers, body: body);
-
+                    final responseData = jsonDecode(response.body);
+                    print(responseData);
                     if (response.statusCode == 200) {
                       print(response.body);
                       setState(() {
-                        _medicineInfo[presId] = jsonDecode(response.body)['info'] ?? 'No information available';
+                        _medicineInfo[presId] = responseData['info'] ?? 'No information available';
                       });
                     } else {
                       setState(() {
@@ -2714,7 +2715,7 @@ Widget _buildEnhancedInfoCard({
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
                       child: Row(
                         children: [
                           Container(

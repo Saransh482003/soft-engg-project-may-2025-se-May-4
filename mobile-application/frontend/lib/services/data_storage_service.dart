@@ -190,14 +190,24 @@ class DataStorageService {
       return [];
     }
   }
-
-  static Future<List<dynamic>> getLastPres() async {
+  static Future<Map<String, String>> getLastPres() async {
     try {
       final data = await getData();
-      return List<dynamic>.from(data['prescriptions']);
+      final prescriptions = List<dynamic>.from(data['prescriptions']);
+      
+      if (prescriptions.isEmpty) {
+        return {"pres_id": "PRSA0001"};
+      }
+      
+      final lastPrescription = prescriptions.last as Map<String, dynamic>;
+      
+      // Convert to Map<String, String> safely
+      return {
+        'pres_id': lastPrescription['pres_id']?.toString() ?? "PRESA0001",
+      };
     } catch (e) {
-      print('Error getting prescriptions: $e');
-      return [];
+      print('Error getting last prescription: $e');
+      return {"pres_id": "PRESA0001"};
     }
   }
 
