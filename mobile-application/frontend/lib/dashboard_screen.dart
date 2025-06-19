@@ -1603,17 +1603,18 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                       Medicine Name: $medicineName
 
                       The information should include just the information publically available about the medicine.
-                      Incase you have no information avaible about the medicine, return "Information not available".
-                      The information should be in text format and should not include any HTML tags or any other formatting. It shoud be 50 words in length.
+                      Incase you have no information available about the medicine, return "Information not available".
+                      The information should be in text format and should not include any HTML tags or any other formatting. It should be 50 words in length.
 
                       # Example Input/Output:
                       Input: Paracetamol
                       Output:
                       {
                           "med_name": "Paracetamol",
-                          "info": <information about the medicine>
+                          "info": "Paracetamol is a common pain reliever and fever reducer used for headaches, muscle aches, and minor pain. It's generally safe when used as directed but can cause liver damage in high doses."
                       }
                       """;
+                  
                     final headers = {
                       'Content-Type': 'application/json',
                     };
@@ -1629,23 +1630,61 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                     });
 
                     final response = await http.post(Uri.parse(url), headers: headers, body: body);
-                    final responseData = jsonDecode(response.body);
-                    print(responseData);
+                    
                     if (response.statusCode == 200) {
-                      print(response.body);
+                      final fullResponse = jsonDecode(response.body) as Map<String, dynamic>;
+                      debugPrint('Full API Response: $fullResponse');
+
+                      // Extract the generated content from Gemini API response structure
+                      final candidates = fullResponse['candidates'] as List<dynamic>?;
+                      if (candidates == null || candidates.isEmpty) {
+                        throw Exception('No candidates in response');
+                      }
+
+                      final content = candidates[0]['content'] as Map<String, dynamic>?;
+                      if (content == null) {
+                        throw Exception('No content in response');
+                      }
+
+                      final parts = content['parts'] as List<dynamic>?;
+                      if (parts == null || parts.isEmpty) {
+                        throw Exception('No parts in content');
+                      }
+
+                      final text = parts[0]['text'] as String?;
+                      if (text == null) {
+                        throw Exception('No text in parts');
+                      }
+                      debugPrint('Extracted text: $text');
+
+                      // Clean the text and extract JSON
+                      String cleanedText = text.trim();
+                      
+                      // Remove markdown code blocks if present
+                      if (cleanedText.startsWith('```json')) {
+                        cleanedText = cleanedText.substring(7);
+                      }
+                      if (cleanedText.endsWith('```')) {
+                        cleanedText = cleanedText.substring(0, cleanedText.length - 3);
+                      }
+                      
+                      // Remove any leading/trailing whitespace
+                      cleanedText = cleanedText.trim();
+
+                      // Parse the extracted JSON
+                      final jsonResponse = jsonDecode(cleanedText) as Map<String, dynamic>;
+                      debugPrint('Parsed JSON Response: $jsonResponse');
                       setState(() {
-                        _medicineInfo[presId] = responseData['info'] ?? 'No information available';
+                        _medicineInfo[presId] = jsonResponse['info'] ?? 'No information available';
                       });
-                    } else {
-                      setState(() {
-                        _medicineInfo[presId] = 'Failed to load information';
-                      });
-                    }
+                    } 
+                    return;
                   } catch (e) {
-                    setState(() {
-                      _medicineInfo[presId] = 'Error loading information';
-                    });
-                  }
+                    print('Error fetching medicine info: $e');
+                      setState(() {
+                        _medicineInfo[presId] = 'No information available';
+                      });
+                  } 
                 }
               },
               children: [
@@ -1680,7 +1719,7 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: isExpired ? ThemeConstants.secondaryColor.withOpacity(0.7) : Colors.blue[700],
+                                      color: isExpired ? ThemeConstants.secondaryColor : Colors.blue[700],
                                     ),
                                   ),
                                 ],
@@ -2793,28 +2832,102 @@ Widget _buildEnhancedInfoCard({
                     color: isExpired ? ThemeConstants.secondaryColor : ThemeConstants.primaryColor,
                   ),
                   onExpansionChanged: (expanded) async {
-                    if (expanded && !_medicineInfo.containsKey(presId)) {
-                      try {
-                        final response = await http.get(
-                          Uri.parse('$baseUrl/get-med-info?med_name=$medicineName'),
-                          headers: {'Content-Type': 'application/json'},
-                        );
-                        if (response.statusCode == 200) {
-                          setState(() {
-                            _medicineInfo[presId] = jsonDecode(response.body)['info'] ?? 'No information available';
-                          });
-                        } else {
-                          setState(() {
-                            _medicineInfo[presId] = 'Failed to load information';
-                          });
-                        }
-                      } catch (e) {
-                        setState(() {
-                          _medicineInfo[presId] = 'Error loading information';
-                        });
+                if (expanded && !_medicineInfo.containsKey(presId)) {
+                  try {
+                    const apiKey = 'AIzaSyDChfe8INK6TpAJgFQ8gVKvSvf1Pgfiu6k';
+                    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey';
+                    final now = DateTime.now();
+
+                    final prompt = """
+                      You are a medical assistant. You would be given a medicine name and you have to return the information about the medicine in a valid JSON format.
+
+                      Medicine Name: $medicineName
+
+                      The information should include just the information publically available about the medicine.
+                      Incase you have no information available about the medicine, return "Information not available".
+                      The information should be in text format and should not include any HTML tags or any other formatting. It should be 50 words in length.
+
+                      # Example Input/Output:
+                      Input: Paracetamol
+                      Output:
+                      {
+                          "med_name": "Paracetamol",
+                          "info": "Paracetamol is a common pain reliever and fever reducer used for headaches, muscle aches, and minor pain. It's generally safe when used as directed but can cause liver damage in high doses."
                       }
-                    }
-                  },
+                      """;
+                  
+                    final headers = {
+                      'Content-Type': 'application/json',
+                    };
+
+                    final body = json.encode({
+                      'contents': [
+                        {
+                          'parts': [
+                            {'text': prompt}
+                          ]
+                        }
+                      ]
+                    });
+
+                    final response = await http.post(Uri.parse(url), headers: headers, body: body);
+                    
+                    if (response.statusCode == 200) {
+                      final fullResponse = jsonDecode(response.body) as Map<String, dynamic>;
+                      debugPrint('Full API Response: $fullResponse');
+
+                      // Extract the generated content from Gemini API response structure
+                      final candidates = fullResponse['candidates'] as List<dynamic>?;
+                      if (candidates == null || candidates.isEmpty) {
+                        throw Exception('No candidates in response');
+                      }
+
+                      final content = candidates[0]['content'] as Map<String, dynamic>?;
+                      if (content == null) {
+                        throw Exception('No content in response');
+                      }
+
+                      final parts = content['parts'] as List<dynamic>?;
+                      if (parts == null || parts.isEmpty) {
+                        throw Exception('No parts in content');
+                      }
+
+                      final text = parts[0]['text'] as String?;
+                      if (text == null) {
+                        throw Exception('No text in parts');
+                      }
+                      debugPrint('Extracted text: $text');
+
+                      // Clean the text and extract JSON
+                      String cleanedText = text.trim();
+                      
+                      // Remove markdown code blocks if present
+                      if (cleanedText.startsWith('```json')) {
+                        cleanedText = cleanedText.substring(7);
+                      }
+                      if (cleanedText.endsWith('```')) {
+                        cleanedText = cleanedText.substring(0, cleanedText.length - 3);
+                      }
+                      
+                      // Remove any leading/trailing whitespace
+                      cleanedText = cleanedText.trim();
+
+                      // Parse the extracted JSON
+                      final jsonResponse = jsonDecode(cleanedText) as Map<String, dynamic>;
+                      debugPrint('Parsed JSON Response: $jsonResponse');
+                      setState(() {
+                        _medicineInfo[presId] = jsonResponse['info'] ?? 'No information available';
+                      });
+                    } 
+                    return;
+                  } catch (e) {
+                    print('Error fetching medicine info: $e');
+                      setState(() {
+                        _medicineInfo[presId] = 'No information available';
+                      });
+                  } 
+                }
+              },
                   children: [
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
@@ -3151,24 +3264,8 @@ Widget _buildEnhancedInfoCard({
           ),
         ),
       ),
-    ),
-  );
-}
-
-  // String _formatExpiryDate(String date) {
-  //   try {
-  //     final parts = date.split('-');
-  //     if (parts.length == 3) {
-  //       final day = parts[0];
-  //       final month = parts[1];  
-  //       final year = parts[2];
-  //       return '$day $month $year';
-  //     }
-  //   } catch (e) {
-  //     print('Error formatting date: $e');
-  //   }
-  //   return date;
-  // }
+    ));
+  }
 
   Widget _buildQuickStat(String label, String value, IconData icon) {
     return Column(

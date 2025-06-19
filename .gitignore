@@ -3,4 +3,5 @@ venv
 __pycache__
 .env
 backend/env
-backend/__pycache__
+backend/__pycache_
+authorisation.json_
