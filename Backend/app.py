@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = 'secret'
 CORS(app)
 db.init_app(app)
 
-with open("authentication.txt", "r") as file:
+with open("authorisation.json", "r") as file:
     auth = json.loads(file.read())
 
 @app.route("/")
@@ -22,11 +22,11 @@ def index():
     return {"message": "Welcome to the Shravan API!"}
 
 
-from routes_functions import configure_routes
+from routes_functions import function_routes
 from routes_user import routes_user
 
-configure_routes(app, db)
-routes_user(app, db)
+function_routes(app, db, auth)
+routes_user(app, db, auth)
 
 if __name__ == "__main__":
     with app.app_context():

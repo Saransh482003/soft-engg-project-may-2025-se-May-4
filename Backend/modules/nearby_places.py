@@ -20,4 +20,14 @@ class NearbyPlaces:
         response = requests.get(google_maps_url, params=params)
         return response.json()["results"]
 
+    def place_details(self, place_id):
+        google_maps_url = f"https://maps.googleapis.com/maps/api/place/details/json?placeid={place_id}&key={self.api_key}"
+        params = {
+            'place_id': place_id,
+            'fields': 'name,rating,formatted_phone_number,website,opening_hours,geometry',
+            'key': self.api_key
+        }
+        response = requests.get(google_maps_url, params=params)
+        return response.json()["result"]
+
     

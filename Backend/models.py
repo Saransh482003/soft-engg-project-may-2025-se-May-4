@@ -20,6 +20,7 @@ class Hospitals(db.Model):
     latitudes = db.Column(db.Numeric(10, 6), nullable=False)
     longitudes = db.Column(db.Numeric(10, 6), nullable=False)
     website = db.Column(db.String, nullable=True)
+    phone = db.Column(db.String, nullable=True)
     rating = db.Column(db.Numeric(2,1), nullable=True)
     num_rating = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String, nullable=False)

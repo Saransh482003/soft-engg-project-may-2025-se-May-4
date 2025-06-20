@@ -5,15 +5,11 @@ from modules.chatbot import get_chatbot_response
 from datetime import datetime
 import uuid
 
-def routes_user(app, db):
-    
-    # CREATE - Register a new user
+def routes_user(app, db, auth):
     @app.route('/api/users', methods=['POST'])
     def create_user():
         try:
             data = request.get_json()
-            
-            # Validate required fields
             required_fields = ['user_name', 'password', 'email', 'mobile','gender', 'dob']
             for field in required_fields:
                 if not data.get(field):
