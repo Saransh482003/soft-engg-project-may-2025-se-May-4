@@ -1,6 +1,6 @@
 import requests
 from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
-from app import db, app
+from config import db, app
 from models import *
 from modules.chatbot import get_chatbot_response
 from datetime import datetime
@@ -34,7 +34,7 @@ def routes_user(app):
             new_user = User(
                 user_id=str(uuid.uuid4()),
                 user_name=data['user_name'],
-                password=data['password'],  # In production, hash this password
+                password=data['password'], 
                 email=data['email'],
                 mobile=data['mobile'],
                 gender=data.get('gender'),
@@ -57,8 +57,6 @@ def routes_user(app):
                 }
             }), 201
             
-        except ValueError as e:
-            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD', 'status': 'fail'}), 400
         except Exception as e:
             db.session.rollback()
             return jsonify({'error': f'Error creating user: {str(e)}', 'status': 'fail'}), 500
