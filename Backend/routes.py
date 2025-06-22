@@ -3,15 +3,18 @@ from flask import Flask, request, session, jsonify
 from config import db, app
 from models import *
 from modules.chatbot import get_chatbot_response
+from flasgger.utils import swag_from
 
 
 def configure_routes(app):
     @app.route('/')
     def home():
         return jsonify({'message': 'Welcome to the Shravan API!'}), 200
-
+    
+    @swag_from('docs/chatbot.yml')
     @app.route('/api/chatbot', methods=['POST'])
     def chatbot():
+        
         data = request.get_json()
         user_input = data.get('question', '').strip()
 
@@ -24,6 +27,7 @@ def configure_routes(app):
         except Exception as e:
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
+    @swag_from('docs/logout.yml')
     @app.route('/logout', methods=['GET'])
     def logout():
         try:
