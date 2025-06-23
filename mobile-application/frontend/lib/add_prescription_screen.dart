@@ -94,7 +94,7 @@ class _AddPrescriptionScreenState extends State<AddPrescriptionScreen> {
     // If number part is at maximum, increment the alpha character
     int alphaCode = alpha.codeUnitAt(0);
     String nextAlpha = String.fromCharCode(alphaCode + 1);
-    return "${prefix}${nextAlpha}0001";
+    return "$prefix${nextAlpha}0001";
   } else {
     // Increment the number part and pad with zeros
     int nextNum = int.parse(num) + 1;
