@@ -39,32 +39,3 @@ class Chatbot:
         except Exception as e:
             return f"Error: {str(e)}"
 
-api_key = "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"
-
-client = Groq(
-    api_key=api_key,
-)
-
-SYSTEM_PROMPT = (
-    
-)
-
-def get_chatbot_response(user_input: str) -> str:
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT
-            },
-            {
-                "role": "user",
-                "content": user_input,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-    )
-    try:
-        response = chat_completion.choices[0].message.content
-        return response
-    except Exception as e:
-        return f"Error: {str(e)}"
