@@ -523,7 +523,7 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
           ),
         ],
       ),      body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           // gradient: LinearGradient(
           //   begin: Alignment.topCenter,
           //   end: Alignment.bottomCenter,
@@ -2528,7 +2528,7 @@ Widget _buildEnhancedQuickStat(String label, String value, IconData icon, Color 
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             shape: BoxShape.circle,
             // gradient: LinearGradient(
             //   colors: [
@@ -2621,7 +2621,7 @@ Widget _buildEnhancedInfoCard({
               const SizedBox(height: 6),
               Text(
                 value,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -2739,8 +2739,8 @@ Widget _buildEnhancedInfoCard({
                             ),
                           ),
                           if (isExpired)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
                               child: Text(
                                 'Expired',
                                 style: TextStyle(
