@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
+from config import app, db
 from flask_cors import CORS
 import requests
 import os
@@ -12,7 +11,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'secret'
 
 CORS(app)
-db.init_app(app)
 
 with open("authorisation.json", "r") as file:
     auth = json.loads(file.read())

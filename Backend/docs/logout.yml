@@ -1,0 +1,29 @@
+tags:
+  - Authentication
+summary: Logout user
+description: Clears the user session to log out the current user.
+produces:
+  - application/json
+responses:
+  200:
+    description: Successful logout
+    schema:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Logged out successfully"
+        status:
+          type: string
+          example: "success"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "An error occurred while logging out"
+        status:
+          type: string
+          example: "error"

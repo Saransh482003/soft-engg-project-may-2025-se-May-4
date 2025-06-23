@@ -15,6 +15,7 @@ class Chatbot:
         chat_completion = self.client.chat.completions.create(
             messages=[
                 {
+
                 "role": "system",
                 "content": self.system_prompt
                 },

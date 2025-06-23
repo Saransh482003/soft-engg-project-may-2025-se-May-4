@@ -1,0 +1,33 @@
+tags:
+  - Chatbot
+summary: Ask health-related chatbot a question
+description: This endpoint allows users to send a question to the AI-powered chatbot and receive a response.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          example: "What is diabetes?"
+responses:
+  200:
+    description: Successful response
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Diabetes is a chronic condition that affects how your body processes blood sugar."
+  400:
+    description: Bad Request - Invalid or empty question
+  500:
+    description: Internal Server Error - Something went wrong with the chatbot response
