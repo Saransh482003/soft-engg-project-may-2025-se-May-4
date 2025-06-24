@@ -1,0 +1,95 @@
+tags:
+  - Nearby Places
+summary: Find nearby places based on coordinates and keyword
+description: This endpoint searches for points of interest (e.g., hospitals, pharmacies) near a given latitude and longitude, filtered by a keyword and within a specified radius.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Location coordinates, search keyword, and optional radius.
+    required: true
+    schema:
+      type: object
+      required:
+        - lat
+        - lon
+      properties:
+        lat:
+          type: number
+          format: float
+          description: Latitude of the center point for the search.
+          example: 34.0522
+        lon:
+          type: number
+          format: float
+          description: Longitude of the center point for the search.
+          example: -118.2437
+        keyword:
+          type: string
+          description: The type of place to search for (e.g., "hospital", "pharmacy", "clinic"). Defaults to "hospital".
+          example: "pharmacy"
+        radius:
+          type: integer
+          description: Search radius in meters (maximum 50000). Defaults to 5000.
+          example: 2000
+responses:
+  200:
+    description: Successfully found nearby places.
+    schema:
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            type: object
+            properties:
+              place_id:
+                type: string
+                description: Unique ID of the place.
+                example: "ChIJUQ_M-R3GwoAR4q3W4C3k0j0"
+              name:
+                type: string
+                description: Name of the place.
+                example: "Good Health Hospital"
+              address:
+                type: string
+                description: Formatted address of the place.
+                example: "123 Main St, Anytown, USA"
+              rating:
+                type: number
+                format: float
+                description: User rating of the place.
+                example: 4.5
+              geometry:
+                type: object
+                properties:
+                  location:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                        format: float
+                        example: 34.0510
+                      lng:
+                        type: number
+                        format: float
+                        example: -118.2450
+  400:
+    description: Bad Request - Missing required parameters.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Please provide lat, lon, and keyword."
+  500:
+    description: Internal Server Error - An unexpected error occurred while searching for places.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Error: Failed to find nearby places."

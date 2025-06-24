@@ -1,0 +1,89 @@
+tags:
+  - Nearby Places
+summary: Get detailed information about a specific place
+description: This endpoint retrieves comprehensive details for a place using its unique place ID.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: The place ID for which to retrieve details.
+    required: true
+    schema:
+      type: object
+      required:
+        - place_id
+      properties:
+        place_id:
+          type: string
+          description: The unique ID of the place obtained from the /api/nearby_places endpoint.
+          example: "ChIJUQ_M-R3GwoAR4q3W4C3k0j0"
+responses:
+  200:
+    description: Successfully retrieved place details.
+    schema:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the place.
+              example: "Good Health Hospital"
+            address:
+              type: string
+              description: Formatted address of the place.
+              example: "123 Main St, Anytown, USA"
+            phone_number:
+              type: string
+              description: Phone number of the place.
+              example: "+12135551234"
+            website:
+              type: string
+              description: Website URL of the place.
+              example: "http://www.goodhealthhospital.com"
+            rating:
+              type: number
+              format: float
+              description: User rating of the place.
+              example: 4.5
+            opening_hours:
+              type: array
+              items:
+                type: string
+              description: Daily opening hours.
+              example: ["Monday: 9 AM – 5 PM", "Tuesday: 9 AM – 5 PM"]
+            geometry:
+              type: object
+              properties:
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                      format: float
+                      example: 34.0510
+                    lng:
+                      type: number
+                      format: float
+                      example: -118.2450
+            # ... potentially other details like reviews, photos, etc.
+  400:
+    description: Bad Request - Missing place ID.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Please provide a place_id."
+  500:
+    description: Internal Server Error - An unexpected error occurred while fetching place details.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Error: Failed to get place details."

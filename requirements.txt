@@ -2,3 +2,5 @@ flask
 langchain
 langchain_community
 langchain_groq
+Flask-SQLAlchemy
+flask_session

@@ -1,14 +1,12 @@
-from config import app, db
+# from config import app, db
+from flask import Flask
 from flask_cors import CORS
 import requests
 import os
 from models import *
 import json
+from config import app,db
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'secret'
 
 CORS(app)
 

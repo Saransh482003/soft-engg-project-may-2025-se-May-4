@@ -1,12 +1,16 @@
 import requests
 from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
 from models import *
-from modules.chatbot import get_chatbot_response
+from modules.chatbot import Chatbot
 from datetime import datetime
 import uuid
+from flasgger import Swagger
+from flasgger.utils import swag_from
+
 
 def routes_user(app, db, auth):
     @app.route('/api/users', methods=['POST'])
+    @swag_from("docs/create_user.yml")
     def create_user():
         try:
             data = request.get_json()
@@ -19,7 +23,7 @@ def routes_user(app, db, auth):
             existing_user = User.query.filter(
                 (User.user_name == data['user_name']) &
                 (User.email == data['email']) &
-                (User.mobile == data['mobile'])
+                (User.mobile == data['mobile']) 
             ).first()
             
             if existing_user:
@@ -58,6 +62,7 @@ def routes_user(app, db, auth):
     
     # READ - Get all users
     @app.route('/api/users', methods=['GET'])
+    @swag_from("docs/get_all_users.yml")
     def get_all_users():
         try:
             page = request.args.get('page', 1, type=int)
@@ -96,6 +101,7 @@ def routes_user(app, db, auth):
     
     # READ - Get user by ID
     @app.route('/api/users/<string:user_id>', methods=['GET'])
+    @swag_from("docs/get_user_by_id.yml")
     def get_user_by_id(user_id):
         try:
             user = User.query.filter_by(user_id=user_id).first()
@@ -120,6 +126,7 @@ def routes_user(app, db, auth):
     
     # READ - Search users by username or email
     @app.route('/api/users/search', methods=['GET'])
+    @swag_from("docs/search_users.yml")
     def search_users():
         try:
             query = request.args.get('q', '').strip()
@@ -153,6 +160,7 @@ def routes_user(app, db, auth):
     
     # UPDATE - Update user by ID
     @app.route('/api/users/<string:user_id>', methods=['PUT'])
+    @swag_from("docs/update_user.yml")
     def update_user(user_id):
         try:
             user = User.query.filter_by(user_id=user_id).first()
@@ -218,6 +226,7 @@ def routes_user(app, db, auth):
     
     # UPDATE - Partial update user by ID
     @app.route('/api/users/<string:user_id>', methods=['PATCH'])
+    @swag_from("docs/partial_user_update.yml")
     def partial_update_user(user_id):
         try:
             user = User.query.filter_by(user_id=user_id).first()
@@ -266,6 +275,7 @@ def routes_user(app, db, auth):
     
     # DELETE - Delete user by ID
     @app.route('/api/users/<string:user_id>', methods=['DELETE'])
+    @swag_from("docs/delete_user.yml")
     def delete_user(user_id):
         try:
             user = User.query.filter_by(user_id=user_id).first()
@@ -287,6 +297,7 @@ def routes_user(app, db, auth):
     
     # User authentication endpoints
     @app.route('/api/users/login', methods=['POST'])
+    @swag_from("docs/user_login.yml")
     def user_login():
         try:
             data = request.get_json()
@@ -320,6 +331,7 @@ def routes_user(app, db, auth):
             return jsonify({'error': f'Login error: {str(e)}', 'status': 'fail'}), 500
     
     @app.route('/api/users/logout', methods=['POST'])
+    @swag_from("docs/user_logout.yml")
     def user_logout():
         try:
             session.clear()
@@ -333,6 +345,7 @@ def routes_user(app, db, auth):
     
     # Get current user info (requires session)
     @app.route('/api/users/me', methods=['GET'])
+    @swag_from("docs/get_current_user.yml")
     def get_current_user():
         try:
             if 'user_id' not in session:

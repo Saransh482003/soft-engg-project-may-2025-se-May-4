@@ -4,7 +4,7 @@ from models import *
 import geocoder
 from modules.chatbot import Chatbot
 from modules.nearby_places import NearbyPlaces
-
+from flasgger.utils import swag_from
 
 
 
@@ -33,6 +33,7 @@ def function_routes(app, db, auth):
     nearby_places = NearbyPlaces(api_key=auth.get("GOOGLE_MAPS_API_KEY"))
 
     @app.route('/api/chatbot', methods=['POST'])
+    @swag_from("docs/chatbot.yml")
     def chatbot_route():
         data = request.get_json()
         user_input = data.get('question', '').strip()
@@ -48,6 +49,7 @@ def function_routes(app, db, auth):
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
     @app.route('/api/location', methods=['GET'])
+    @swag_from("docs/location.yml")
     def location_route():
         g = geocoder.ip('me')
         if not g.ok:
@@ -59,6 +61,7 @@ def function_routes(app, db, auth):
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
     @app.route('/api/nearby_places', methods=['POST'])
+    @swag_from("docs/nearby_places.yml")
     def nearby_places_route():
         data = request.get_json()
         lat = data.get('lat')
@@ -76,6 +79,7 @@ def function_routes(app, db, auth):
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
     @app.route('/api/place-details', methods=['POST'])
+    @swag_from("docs/place_details.yml")
     def place_details_route():
         data = request.get_json()
         place_id = data.get('place_id')
