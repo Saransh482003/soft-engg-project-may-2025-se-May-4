@@ -28,6 +28,6 @@ class NearbyPlaces:
             'key': self.api_key
         }
         response = requests.get(google_maps_url, params=params)
-        return response.json()["result"]
+        return response.json()
 
     
