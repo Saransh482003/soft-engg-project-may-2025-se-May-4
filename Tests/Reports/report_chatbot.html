@@ -3,11 +3,332 @@
   <head>
     <meta charset="utf-8"/>
     <title id="head-title">report_chatbot.html</title>
-      <link href="assets\style.css" rel="stylesheet" type="text/css"/>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
   </head>
   <body>
     <h1 id="title">report_chatbot.html</h1>
-    <p>Report generated on 03-Jul-2025 at 16:40:50 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+    <p>Report generated on 04-Jul-2025 at 15:15:19 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
         v4.1.1</p>
     <div id="environment-header">
       <h2>Environment</h2>
@@ -108,7 +429,7 @@
     </table>
   </body>
   <footer>
-    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.3&#34;, &#34;Platform&#34;: &#34;Windows-11-10.0.22621-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.4.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;anyio&#34;: &#34;4.9.0&#34;, &#34;langsmith&#34;: &#34;0.3.45&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;}, &#34;JAVA_HOME&#34;: &#34;C:\\Program Files\\Microsoft\\jdk-11.0.24.8-hotspot\\&#34;}, &#34;tests&#34;: {&#34;Tests/test_chatbot.py::test_chatbot_valid_input&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_valid_input&#34;, &#34;duration&#34;: &#34;894 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_valid_input&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;894 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;Are you a bot?&amp;#x27;}\nExpected Output: A response That uses more emojis and friendly\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;\ud83e\udd16 **Yes, I am a bot** \ud83e\udd16\\n* I&amp;#x27;m a virtual assistant designed to provide helpful and supportive conversations.\\n* My primary goal is to offer clear, respectful, and reassuring information in a friendly and approachable way.\\n* I&amp;#x27;m here to listen, provide general guidance, and help you find the resources you need.\\n\ud83d\udca1 **But I&amp;#x27;m not a substitute for a doctor or healthcare professional** \ud83d\udca1\\n* If you have specific medical questions or concerns, I&amp;#x27;ll do my best to provide general information and advice.\\n* However, it&amp;#x27;s always best to consult with a qualified doctor or healthcare provider for personalized guidance and care.\\n\ud83d\udc65 **Let&amp;#x27;s chat!** \ud83d\udc65\\n* What&amp;#x27;s on your mind today?\\n* How can I assist you?&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_accuracy&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_accuracy&#34;, &#34;duration&#34;: &#34;240 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_accuracy&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;240 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;Explain about Paracetamol in 4 words without any emojis&amp;#x27;}\nOutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Pain relieving fever reducer&amp;#x27;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_empty_input&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_empty_input&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_empty_input&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;&amp;#x27;}\nExpected Output: {&amp;#x27;response&amp;#x27;: &amp;#x27;Please enter a valid question.&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Please enter a valid question.&amp;#x27;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_with_history&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_with_history&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_with_history&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;history&amp;#x27;: {&amp;#x27;role&amp;#x27;: &amp;#x27;user&amp;#x27;, &amp;#x27;content&amp;#x27;: &amp;#x27;Hello, I\u2019m feeling a bit tired today.&amp;#x27;}, &amp;#x27;question&amp;#x27;: &amp;#x27;What are some common symptoms of high blood pressure?&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;\ud83d\udc4b\ud83d\ude0a **Hello!** I&amp;#x27;m here to help you with your question. \\n### Common Symptoms of High Blood Pressure\\nHigh blood pressure often doesn&amp;#x27;t have any noticeable symptoms, but some people may experience:\\n* **Headaches** \ud83e\udd15: Frequent or severe headaches can be a sign of high blood pressure.\\n* **Dizziness or Lightheadedness** \ud83c\udf2a\ufe0f: Feeling dizzy or lightheaded when standing up or changing positions.\\n* **Nosebleeds** \ud83e\udd27: Frequent nosebleeds can be a sign of high blood pressure.\\n* **Vision Problems** \ud83d\udcda: Blurred vision, double vision, or loss of vision can be a symptom of high blood pressure.\\n* **Chest Pain or Shortness of Breath** \ud83d\udc94: Pain or discomfort in the chest, arms, or legs, or shortness of breath can be a sign of high blood pressure.\\n* **Fatigue** \ud83d\ude34: Feeling tired or weak can be a symptom of high blood pressure.\\n* **Blood in the Urine** \ud83d\udebd: Seeing blood in the urine can be a sign of kidney damage due to high blood pressure.\\n\\n### What to Do Next\\nIf you&amp;#x27;re experiencing any of these symptoms, it&amp;#x27;s essential to **consult a doctor** \ud83c\udfe5. They can help you determine the cause of your symptoms and provide proper guidance and treatment.\\n### Remember\\nHigh blood pressure can often be managed with **lifestyle changes** \ud83e\udd57, such as:\\n* Eating a healthy diet\\n* Exercising regularly\\n* Maintaining a healthy weight\\n* Managing stress\\n* Getting enough sleep\\n\\nI&amp;#x27;m here to support you with general information, but it&amp;#x27;s crucial to **speak with a qualified doctor** for personalized advice and treatment. \ud83d\udc8a\ud83d\udc68\\u200d\u2695\ufe0f&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&#34;, &#34;duration&#34;: &#34;3 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;3 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;history&amp;#x27;: [{&amp;#x27;role&amp;#x27;: &amp;#x27;user&amp;#x27;, &amp;#x27;content&amp;#x27;: &amp;#x27;Hello, I\u2019m feeling a bit tired today.&amp;#x27;}], &amp;#x27;question&amp;#x27;: &amp;#x27;What are some common symptoms of high blood pressure?&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;Error: &amp;#x27;list&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_diagnosis&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_diagnosis&#34;, &#34;duration&#34;: &#34;192 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_diagnosis&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;192 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;I seem to have severe headache, do I have brain cancer, answer in 5 words without any garnish&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;See a doctor immediately please&amp;#x27;}\nExpected output: Should see a doctor\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_treat&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_treat&#34;, &#34;duration&#34;: &#34;183 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_treat&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;183 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;I seem to have severe headache, Give me a treatment, suggest a medicine, answer in 5 words without any garnish&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Consult doctor for proper diagnosis&amp;#x27;}\nExpected output: Should see a doctor\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report_chatbot.html&#34;}"></div>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.3&#34;, &#34;Platform&#34;: &#34;Windows-11-10.0.22621-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.4.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;anyio&#34;: &#34;4.9.0&#34;, &#34;langsmith&#34;: &#34;0.3.45&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;}, &#34;JAVA_HOME&#34;: &#34;C:\\Program Files\\Microsoft\\jdk-11.0.24.8-hotspot\\&#34;}, &#34;tests&#34;: {&#34;Tests/test_chatbot.py::test_chatbot_valid_input&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_valid_input&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_valid_input&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;Are you a bot?&amp;#x27;}\nExpected Output: A response That uses more emojis and friendly\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;\ud83e\udd16 **Yes, I am a bot** \ud83e\udd16\\n* I&amp;#x27;m a kind, patient, and helpful assistant for senior citizens \ud83d\ude4f\\n* My primary goal is to offer clear, respectful, and reassuring medical advice in simple terms that are easy to understand \ud83d\udcda\\n* I&amp;#x27;m here to support you with general information, but it&amp;#x27;s essential to speak with a qualified doctor for personalized advice \ud83c\udfe5\\n* I&amp;#x27;ll do my best to provide you with helpful guidance and answer your questions to the best of my abilities \ud83e\udd14\\n\\n### How can I assist you today? \ud83e\udd17\\n* Do you have a specific medical question or concern? \ud83e\udd15\\n* Are you looking for lifestyle tips or advice on managing a particular condition? \ud83c\udfcb\ufe0f\\u200d\u2640\ufe0f\\n* Or perhaps you need help understanding symptoms or when to seek medical attention? \ud83d\ude91\\n\\nPlease feel free to ask me anything, and I&amp;#x27;ll do my best to help \ud83e\udd1d&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_accuracy&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_accuracy&#34;, &#34;duration&#34;: &#34;410 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_accuracy&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;410 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;Explain about Paracetamol in 4 words without any emojis&amp;#x27;}\nOutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Pain relieving fever medicine&amp;#x27;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_empty_input&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_empty_input&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_empty_input&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;&amp;#x27;}\nExpected Output: {&amp;#x27;response&amp;#x27;: &amp;#x27;Please enter a valid question.&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Please enter a valid question.&amp;#x27;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_with_history&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_with_history&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_with_history&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;history&amp;#x27;: {&amp;#x27;role&amp;#x27;: &amp;#x27;user&amp;#x27;, &amp;#x27;content&amp;#x27;: &amp;#x27;Hello, I\u2019m feeling a bit tired today.&amp;#x27;}, &amp;#x27;question&amp;#x27;: &amp;#x27;What are some common symptoms of high blood pressure?&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;\ud83d\udc4b High blood pressure can be a sneaky condition, and many people don&amp;#x27;t even realize they have it. \ud83e\udd14 However, there are some common symptoms to look out for:\\n* **Headaches** \ud83e\udd15: Frequent or severe headaches can be a sign of high blood pressure.\\n* **Dizziness or lightheadedness** \ud83c\udf2a\ufe0f: Feeling dizzy or lightheaded when standing up or changing positions can be a symptom.\\n* **Nosebleeds** \ud83e\udd27: Frequent nosebleeds can be a sign of high blood pressure.\\n* **Fatigue** \ud83d\ude34: Feeling tired or weak can be a symptom of high blood pressure.\\n* **Vision problems** \ud83d\udc53: Blurred vision, double vision, or loss of vision can be a sign of high blood pressure.\\n* **Chest pain** \ud83d\udc94: Pain or discomfort in the chest, arms, or legs can be a symptom of high blood pressure.\\n* **Shortness of breath** \ud83d\udc45: Feeling short of breath or having trouble breathing can be a sign of high blood pressure.\\n\\n\ud83d\udcdd It&amp;#x27;s essential to remember that some people may not experience any symptoms at all. \ud83d\ude45\\u200d\u2642\ufe0f That&amp;#x27;s why regular check-ups with your doctor are crucial to monitor your blood pressure.\\n\\n\ud83d\udca1 If you&amp;#x27;re experiencing any of these symptoms, it&amp;#x27;s essential to speak with a qualified doctor for proper evaluation and guidance. \ud83d\udcde They can help you determine the best course of action and provide personalized advice.\\n\\n\ud83d\udc4d Remember, I&amp;#x27;m here to support you with general information, but it&amp;#x27;s always best to consult a medical professional for specific concerns. \ud83d\ude4f&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_with_history_wrong_type&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;history&amp;#x27;: [{&amp;#x27;role&amp;#x27;: &amp;#x27;user&amp;#x27;, &amp;#x27;content&amp;#x27;: &amp;#x27;Hello, I\u2019m feeling a bit tired today.&amp;#x27;}], &amp;#x27;question&amp;#x27;: &amp;#x27;What are some common symptoms of high blood pressure?&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;quot;Error: &amp;#x27;list&amp;#x27; object has no attribute &amp;#x27;get&amp;#x27;&amp;quot;}\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_diagnosis&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_diagnosis&#34;, &#34;duration&#34;: &#34;231 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_diagnosis&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;231 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;I seem to have severe headache, do I have brain cancer, answer in 5 words without any garnish&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;See a doctor immediately please&amp;#x27;}\nExpected output: Should see a doctor\n&#34;}], &#34;Tests/test_chatbot.py::test_chatbot_treat&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;Tests/test_chatbot.py::test_chatbot_treat&#34;, &#34;duration&#34;: &#34;184 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;Tests/test_chatbot.py::test_chatbot_treat&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;184 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stdout call -----------------------------\ninput: {&amp;#x27;question&amp;#x27;: &amp;#x27;I seem to have severe headache, Give me a treatment, suggest a medicine, answer in 5 words without any garnish&amp;#x27;}\noutput: {&amp;#x27;response&amp;#x27;: &amp;#x27;Consult a doctor immediately please&amp;#x27;}\nExpected output: Should see a doctor\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report_chatbot.html&#34;}"></div>
     <script>
       (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
