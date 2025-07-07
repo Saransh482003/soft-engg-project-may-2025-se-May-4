@@ -40,8 +40,8 @@ async function onSubmit() {
     <div class="login-card">
       <h1 class="text-center">🔐 Login to SHARVAN</h1>
       <p class="text-center subtitle">Your wellness, our priority</p>
-      <form @submit.prevent="onSubmit">
-        <div class="mb-3">
+      <form @submit.prevent="onSubmit" class="text-box-wrapper">
+        <!-- <div class="mb-3">
           <label for="email" class="form-label">📧 Email Address</label>
           <input type="email" class="form-control" id="email" v-model="email" required>
         </div>
@@ -49,7 +49,19 @@ async function onSubmit() {
         <div class="mb-3">
           <label for="password" class="form-label">🔒 Password</label>
           <input type="password" class="form-control" id="password" v-model="password" required>
-        </div>
+        </div> -->
+
+        <div class="input-row">
+  <label for="email">📧 Email Address</label>
+  <input type="email" id="email" v-model="email" required>
+</div>
+
+<div class="input-row">
+  <label for="password">🔒 Password</label>
+  <input type="password" id="password" v-model="password" required>
+</div>
+
+
 
         <div class="d-flex justify-content-center mb-3">
           <button type="submit" class="btn login-button">Login</button>
@@ -97,6 +109,7 @@ async function onSubmit() {
 
 .form-label {
   font-weight: bold;
+  text-align: left;
   color: #4a148c;
 }
 
@@ -132,4 +145,54 @@ async function onSubmit() {
   background-color: #f8bbd0;
   color: #4a148c;
 }
+
+.input-group-center {
+  display: flex;
+  flex-direction: column;
+  .form-label{
+    text-align: left;
+  }
+}
+
+.input-group-center input {
+  width: 80%; /* Adjust width as needed */
+  max-width: 400px;
+}
+.text-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.input-group-center input {
+  width: 80%; /* Adjust width as needed */
+  max-width: 400px;
+}
+.text-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.input-row label {
+  flex: 1;
+  text-align: left;
+  font-weight: bold;
+  color: #4a148c;
+}
+
+.input-row input {
+  flex: 2;
+  border-radius: 8px;
+  border: 1px solid #ce93d8;
+  padding: 10px;
+}
+
+
 </style>

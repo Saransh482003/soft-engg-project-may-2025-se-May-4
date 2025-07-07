@@ -1,57 +1,114 @@
 <template>
-  <nav class="navbar navbar-dark bg-primary fixed-top">
-    <RouterLink class="home-btn" to="/userdashboard">🏠 Home</RouterLink>
-     <h2>🎙️ SHARVAN Voice/Text Chatbot</h2>
-  </nav>
-  <div class="chatbot-container">
-    <div class="chat-box mb-3 p-3">
-      <div v-for="(msg, index) in messages" :key="index" :class="msg.sender">
-        <strong>{{ msg.sender === 'user' ? '🧑 You:' : '🤖 Bot:' }}</strong> {{ msg.text }}
+  <div class="chatbot-page">
+    <div class="chatbot-header">
+      <RouterLink to="/userdashboard" class="back-button">
+        <span class="material-icons">arrow_back</span>
+      </RouterLink>
+      <h1>SHARVAN Voice Assistant</h1>
+      <div class="theme-toggle">
+        <button @click="toggleDarkMode" class="theme-btn">
+          <span class="material-icons">{{ darkMode ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
       </div>
     </div>
 
-    <form @submit.prevent="sendMessage" class="d-flex gap-2">
-      <input
-        v-model="userInput"
-        class="form-control"
-        type="text"
-        placeholder="Type your question..."
-      />
-      <button class="btn btn-primary" type="submit">Send</button>
-      <button
-        class="btn btn-secondary"
-        type="button"
-        @click="startListening"
-        :disabled="!supportsSpeech"
-      >
-        🎤 Speak
-      </button>
-    </form>
+    <div class="chatbot-container">
+      <div class="chat-header">
+        <div class="chat-info">
+           <img src="../assets/Sharvan_logo.jpeg" alt="Avatar" class="chat-avatar" />
+          <div>
+            <h2>SHARVAN</h2>
+            <p>Your health assistant</p>
+          </div>
+        </div>
+      </div>
 
-    <p v-if="!supportsSpeech" class="text-muted mt-2">
-      ⚠️ Voice input not supported in this browser.
-    </p>
+      <div class="chat-messages" ref="messagesContainer">
+        <div v-if="messages.length === 0" class="empty-chat">
+          <span class="material-icons">forum</span>
+          <p>Ask me anything about your health, medications, or care!</p>
+        </div>
+        
+        <div v-for="(msg, index) in messages" :key="index" 
+             :class="['message-bubble', msg.sender]">
+          <div class="message-content">
+            <p>{{ msg.text }}</p>
+            <span class="message-time">{{ msg.time }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <form @submit.prevent="sendMessage" class="input-form">
+          <input
+            v-model="userInput"
+            type="text"
+            placeholder="Type your message..."
+            :disabled="isProcessing"
+          />
+          <button 
+            type="button" 
+            @click="startListening" 
+            :disabled="!supportsSpeech || isProcessing"
+            class="voice-btn"
+            :class="{ 'listening': isListening }"
+          >
+            <span class="material-icons">{{ isListening ? 'mic' : 'mic_none' }}</span>
+          </button>
+          <button 
+            type="submit" 
+            class="send-btn"
+            :disabled="!userInput.trim() || isProcessing"
+          >
+            <span class="material-icons">send</span>
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 interface Message {
   text: string;
   sender: 'user' | 'bot';
+  time: string;
 }
 
+const router = useRouter();
 const messages = ref<Message[]>([]);
 const userInput = ref('');
 const supportsSpeech = ref(false);
-let recognition: SpeechRecognition | null = null;
+const isListening = ref(false);
+const isProcessing = ref(false);
+const messagesContainer = ref<HTMLElement | null>(null);
+const darkMode = ref(localStorage.getItem('darkMode') === 'true');
+
+let recognition: any = null;
 
 // Check for voice support
 onMounted(() => {
+  // Initialize with a welcome message
+  messages.value.push({ 
+    text: "Hello! I'm SHARVAN, your health assistant. How can I help you today?", 
+    sender: 'bot',
+    time: getCurrentTime()
+  });
+
+  // Scroll to bottom of messages
+  scrollToBottom();
+  
+  // Check for dark mode preference
+  document.body.classList.toggle('dark-mode', darkMode.value);
+  
+  // Initialize speech recognition
   const SpeechRecognitionClass =
     (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
   if (SpeechRecognitionClass) {
     supportsSpeech.value = true;
     recognition = new SpeechRecognitionClass();
@@ -59,87 +116,409 @@ onMounted(() => {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onstart = () => {
+      isListening.value = true;
+    };
+
+    recognition.onend = () => {
+      isListening.value = false;
+    };
+
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       userInput.value = transcript;
       sendMessage();
     };
+    
+    recognition.onerror = () => {
+      isListening.value = false;
+    };
   }
 });
 
-// Send message to backend
-const sendMessage = async () => {
-  if (!userInput.value.trim()) return;
+// Watch for new messages and scroll to bottom
+watch(messages, () => {
+  nextTick(() => {
+    scrollToBottom();
+  });
+});
 
-  messages.value.push({ text: userInput.value, sender: 'user' });
-
-  try {
-    const res = await axios.post('https://your-backend-api/chatbot', {
-      message: userInput.value,
-    });
-    messages.value.push({ text: res.data.reply, sender: 'bot' });
-  } catch (err) {
-    messages.value.push({ text: 'Sorry, I couldn’t get that.', sender: 'bot' });
-  }
-
-  userInput.value = '';
+// Get current time for message timestamp
+const getCurrentTime = () => {
+  const now = new Date();
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-// Trigger voice
+// Send message to backend
+const sendMessage = async () => {
+  if (!userInput.value.trim() || isProcessing.value) return;
+  
+  const messageText = userInput.value;
+  userInput.value = '';
+  isProcessing.value = true;
+  
+  // Add user message
+  messages.value.push({ 
+    text: messageText, 
+    sender: 'user',
+    time: getCurrentTime()
+  });
+
+  try {
+    // In a real app, you'd connect to your backend
+    // For now, simulate a response with a delay
+    setTimeout(() => {
+      // This is where you'd make the actual API call
+      // const res = await axios.post('http://localhost:5000/api/chatbot', {
+      //   message: messageText,
+      // });
+      
+      // Simulated response based on common questions
+      let botResponse = "I'm sorry, I don't understand that yet. My capabilities are still developing.";
+      
+      if (messageText.toLowerCase().includes('medicine')) {
+        botResponse = "I can help you track your medications. Would you like to see your medicine schedule or set a reminder?";
+      } else if (messageText.toLowerCase().includes('doctor') || messageText.toLowerCase().includes('appointment')) {
+        botResponse = "You can find nearby doctors in the Doctor Finder section. Would you like me to open that for you?";
+      } else if (messageText.toLowerCase().includes('emergency')) {
+        botResponse = "If you're experiencing an emergency, please use the Emergency SOS feature or call emergency services immediately.";
+      } else if (messageText.toLowerCase().includes('hello') || messageText.toLowerCase().includes('hi')) {
+        botResponse = "Hello! How can I assist you with your health needs today?";
+      }
+      
+      messages.value.push({ 
+        text: botResponse, 
+        sender: 'bot',
+        time: getCurrentTime()
+      });
+      
+      isProcessing.value = false;
+    }, 1000);
+  } catch (err) {
+    messages.value.push({ 
+      text: 'Sorry, I couldn\'t process your request. Please try again.', 
+      sender: 'bot',
+      time: getCurrentTime()
+    });
+    isProcessing.value = false;
+  }
+};
+
+// Trigger voice input
 const startListening = () => {
-  if (recognition) recognition.start();
+  if (recognition && !isListening.value) {
+    recognition.start();
+  } else if (recognition && isListening.value) {
+    recognition.stop();
+  }
+};
+
+// Scroll to the bottom of the chat
+const scrollToBottom = () => {
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  }
+};
+
+// Toggle dark mode
+const toggleDarkMode = () => {
+  darkMode.value = !darkMode.value;
+  localStorage.setItem('darkMode', darkMode.value.toString());
+  document.body.classList.toggle('dark-mode', darkMode.value);
 };
 </script>
 
 <style scoped>
+.chatbot-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bg-color, #f5f5f5);
+}
 
-.navbar {
+.chatbot-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #ffe6f0;
-  color: black;
-  padding: 10px 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  padding: 1rem 1.5rem;
+  background-color: var(--primary-color, #4e54c8);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.home-btn {
+
+.chatbot-header h1 {
+  flex: 1;
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
   text-decoration: none;
-  color: black;
-  background: #ffe6f0;
-  padding: 6px 12px;
-  border-radius: 5px;
-  font-size: larger;
+  transition: background-color 0.3s;
 }
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.theme-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 .chatbot-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 1.5rem;
-  background-color: #ffe6f0;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  width: 100%;
+  margin: 1rem auto;
+  flex: 1;
   border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg, white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;  
 }
-.chat-box {
-  height: 300px;
+
+.chat-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color, #eaeaea);
+  background-color: var(--card-bg-accent, #f9f9f9);
+}
+
+.chat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-info .material-icons {
+  font-size: 2rem;
+  color: var(--primary-color, #4e54c8);
+  background-color: var(--icon-bg, rgba(78, 84, 200, 0.1));
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.chat-info h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-color, #333);
+}
+
+.chat-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted, #666);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: var(--chat-bg, #f5f7fb);
 }
-.user {
-  text-align: right;
-  margin-bottom: 8px;
-  color: #0d6efd;
+
+.empty-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted, #888);
 }
-.bot {
-  text-align: left;
-  margin-bottom: 8px;
-  color: #198754;
+
+.empty-chat .material-icons {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
 }
-.container-fluid{
-  text-align: right;
+
+.message-bubble {
+  max-width: 75%;
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
 }
-.form-control{
-  font-size: large;
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+.message-bubble.user {
+  align-self: flex-end;
+  background-color: var(--primary-color, #4e54c8);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.bot {
+  align-self: flex-start;
+  background-color: var(--message-bot-bg, #e9ecef);
+  color: var(--text-color, #333);
+  border-bottom-left-radius: 4px;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content p {
+  margin: 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.7;
+  align-self: flex-end;
+}
+
+.chat-input {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color, #eaeaea);
+  background-color: var(--card-bg, white);
+}
+
+.input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--input-bg, #f0f2f5);
+  border-radius: 24px;
+  padding: 0.5rem 0.75rem;
+}
+
+.input-form input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-color, #333);
+}
+
+.input-form input::placeholder {
+  color: var(--text-muted, #888);
+}
+
+.voice-btn, .send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--btn-bg, rgba(78, 84, 200, 0.1));
+  color: var(--primary-color, #4e54c8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.voice-btn:hover, .send-btn:hover {
+  background-color: var(--btn-hover-bg, rgba(78, 84, 200, 0.2));
+}
+
+.voice-btn:disabled, .send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-btn.listening {
+  background-color: #ff5252;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.send-btn {
+  background-color: var(--primary-color, #4e54c8);
+  color: white;
+}
+
+/* Dark mode styles */
+:root {
+  --bg-color: #f5f5f5;
+  --card-bg: white;
+  --card-bg-accent: #f9f9f9;
+  --primary-color: #4e54c8;
+  --text-color: #333;
+  --text-muted: #666;
+  --border-color: #eaeaea;
+  --chat-bg: #f5f7fb;
+  --message-bot-bg: #e9ecef;
+  --input-bg: #f0f2f5;
+  --btn-bg: rgba(78, 84, 200, 0.1);
+  --btn-hover-bg: rgba(78, 84, 200, 0.2);
+  --icon-bg: rgba(78, 84, 200, 0.1);
+}
+
+:global(.dark-mode) {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --card-bg-accent: #252525;
+  --primary-color: #6c72dc;
+  --text-color: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --border-color: #333;
+  --chat-bg: #151515;
+  --message-bot-bg: #2a2a2a;
+  --input-bg: #252525;
+  --btn-bg: rgba(108, 114, 220, 0.2);
+  --btn-hover-bg: rgba(108, 114, 220, 0.3);
+  --icon-bg: rgba(108, 114, 220, 0.2);
+}
+
+.chat-avatar {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  background-color: var(--icon-bg, rgba(78, 84, 200, 0.1));
+  padding: 4px;
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  overflow-x: hidden;
+}
+
+/* Make sure Material Icons are included in your index.html or imported elsewhere */
 </style>
