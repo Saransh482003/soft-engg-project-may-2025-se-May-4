@@ -6,7 +6,14 @@ import os
 from models import *
 import json
 from config import app,db
-
+from routes_functions import function_routes
+from routes_user import routes_user
+from routes_analytics import routes_analytics
+from routes_content import routes_content
+from routes_doctors import routes_doctors
+from routes_emergency import routes_emergency
+from routes_reminders import routes_reminders
+from routes_health import routes_health
 
 CORS(app)
 
@@ -18,11 +25,15 @@ def index():
     return {"message": "Welcome to the Shravan API!"}
 
 
-from routes_functions import function_routes
-from routes_user import routes_user
 
 function_routes(app, db, auth)
-routes_user(app, db, auth)
+routes_user(app, db)
+routes_analytics(app, db)
+routes_content(app, db)
+routes_doctors(app, db)
+routes_emergency(app, db)
+routes_reminders(app, db)
+routes_health(app, db)
 
 if __name__ == "__main__":
     with app.app_context():

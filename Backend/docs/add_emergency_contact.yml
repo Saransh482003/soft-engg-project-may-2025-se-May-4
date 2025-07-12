@@ -1,0 +1,56 @@
+tags:
+  - Emergency Contacts
+summary: Add a new emergency contact
+description: Allows a logged-in user to add a new emergency contact to their profile.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Details of the emergency contact to add.
+    required: true
+    schema:
+      type: object
+      required:
+        - contact_name
+        - contact_number
+      properties:
+        contact_name:
+          type: string
+          description: The name of the emergency contact.
+          example: "John Doe"
+        contact_number:
+          type: string
+          description: The phone number of the emergency contact.
+          example: "+15551234567"
+        relation:
+          type: string
+          description: The relationship of the contact to the user (e.g., "Son", "Daughter", "Friend").
+          example: "Son"
+responses:
+  201:
+    description: Emergency contact added successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Emergency contact added"
+  400:
+    description: Bad Request - Missing required fields.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Contact name and number are required"
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"

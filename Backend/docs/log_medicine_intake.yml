@@ -1,0 +1,53 @@
+tags:
+  - Medicine Logs
+summary: Log medicine intake
+description: Records whether a medicine reminder was taken or skipped for a specific reminder ID.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Details of the medicine intake log.
+    required: true
+    schema:
+      type: object
+      required:
+        - reminder_id
+      properties:
+        reminder_id:
+          type: integer
+          description: The ID of the reminder for which to log intake.
+          example: 1
+        status:
+          type: string
+          description: The status of the medicine intake.
+          enum: ["taken", "skipped"]
+          default: "taken"
+          example: "taken"
+responses:
+  201:
+    description: Medicine intake logged successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Medicine intake logged successfully"
+  400:
+    description: Bad Request - Reminder ID is required.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Reminder ID is required"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error logging medicine intake: Database error"

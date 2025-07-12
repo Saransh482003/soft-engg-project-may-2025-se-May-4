@@ -1,0 +1,58 @@
+tags:
+  - Analytics
+summary: Get symptom trends by pincode
+description: Retrieves the most common symptom trends reported within a specific geographical pincode. This helps in understanding local health patterns.
+produces:
+  - application/json
+parameters:
+  - in: query
+    name: pincode
+    type: string
+    required: true
+    description: The 6-digit pincode for which to retrieve symptom trends.
+    example: "110001"
+responses:
+  200:
+    description: Successfully retrieved symptom trends for the given pincode.
+    schema:
+      type: object
+      properties:
+        pincode:
+          type: string
+          description: The pincode for which the trends are reported.
+          example: "110001"
+        trends:
+          type: array
+          items:
+            type: object
+            properties:
+              symptom:
+                type: string
+                description: The symptom term.
+                example: "fever"
+              count:
+                type: integer
+                description: The number of times this symptom was logged in the pincode.
+                example: 150
+  400:
+    description: Bad Request - Pincode is required.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Pincode is required for analysis"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred during trend analysis.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error fetching symptom trends: Database error"
+        status:
+          type: string
+          example: "fail"
