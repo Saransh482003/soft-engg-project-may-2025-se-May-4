@@ -136,3 +136,21 @@ class UserPharmacyFavorites(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), primary_key=True)
     pharmacy_id = db.Column(db.Integer, db.ForeignKey('pharmacy.pharmacy_id'), primary_key=True)
     favorited_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+
+class SymptomLogs(db.Model):
+    __tablename__ = 'symptom_logs'
+    log_id = db.Column(db.Integer, primary_key=True)
+    symptom_term = db.Column(db.String, nullable=False) # e.g., "headache", "dizziness"
+    pincode = db.Column(db.String) # Log the general area
+    logged_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+
+class YogaVideos(db.Model):
+    __tablename__ = 'yoga_videos'
+    video_id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.Text)
+    video_url = db.Column(db.String, nullable=False, unique=True)
+    difficulty = db.Column(db.String) # e.g., "Beginner", "Chair Yoga"
+    duration_minutes = db.Column(db.Integer)
