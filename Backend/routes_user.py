@@ -2,13 +2,14 @@ import requests
 from flask import Flask, request, redirect, send_from_directory,render_template, url_for, session,abort,flash,jsonify
 from models import *
 from modules.chatbot import Chatbot
-from datetime import datetime
+from datetime import datetime,date
 import uuid
 from flasgger import Swagger
 from flasgger.utils import swag_from
+from sqlalchemy import func
 
 
-def routes_user(app, db, auth):
+def routes_user(app, db):
     @app.route('/api/users', methods=['POST'])
     @swag_from("docs/create_user.yml")
     def create_user():

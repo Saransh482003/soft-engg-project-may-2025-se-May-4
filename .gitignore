@@ -7,3 +7,4 @@ backend/__pycache__
 flask_session
 Backend/try.ipynb
 Backend/instance/
+Backend/instance/database.db

@@ -1,0 +1,102 @@
+tags:
+  - Reminders
+summary: Create a new medicine reminder
+description: Allows a logged-in user to create a new medicine reminder. If the specified medicine name does not already exist in the system, a new medicine entry will be created.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Details for the new medicine reminder.
+    required: true
+    schema:
+      type: object
+      required:
+        - medicine_name
+        - time_of_day
+        - frequency
+      properties:
+        medicine_name:
+          type: string
+          description: The name of the medicine for the reminder.
+          example: "Paracetamol"
+        dosage:
+          type: string
+          description: The dosage of the medicine (e.g., "500mg", "1 tablet").
+          example: "500mg"
+        time_of_day:
+          type: string
+          description: The specific time of day for the reminder (e.g., "08:00", "14:30").
+          pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$" # HH:MM format
+          example: "09:00"
+        frequency:
+          type: string
+          description: How often the medicine should be taken (e.g., "daily", "twice a day", "every other day").
+          example: "daily"
+        relation_to_meal:
+          type: string
+          description: Whether the medicine should be taken before, with, or after a meal.
+          enum: ["before meal", "with meal", "after meal", "anytime"]
+          example: "after meal"
+        notification_type:
+          type: string
+          description: The preferred type of notification for the reminder.
+          enum: ["sms", "email", "app_notification"]
+          default: "sms"
+          example: "app_notification"
+        is_active:
+          type: boolean
+          description: Whether the reminder is currently active.
+          default: true
+          example: true
+responses:
+  201:
+    description: Reminder created successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Reminder created successfully"
+        status:
+          type: string
+          example: "success"
+        reminder_id:
+          type: integer
+          description: The unique ID of the newly created reminder.
+          example: 1
+  400:
+    description: Bad Request - Missing required fields.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Missing required fields (medicine_name, time_of_day, frequency)"
+        status:
+          type: string
+          example: "fail"
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error creating reminder: Database connection failed"
+        status:
+          type: string
+          example: "fail"

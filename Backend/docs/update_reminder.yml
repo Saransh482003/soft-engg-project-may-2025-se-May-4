@@ -1,0 +1,98 @@
+tags:
+  - Reminders
+summary: Update an existing medicine reminder
+description: Modifies the details of an existing medicine reminder identified by its ID. Only the fields provided in the request body will be updated. If `medicine_name` is provided and doesn't exist, a new medicine entry will be created.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: reminder_id
+    type: integer
+    required: true
+    description: The unique ID of the reminder to update.
+    example: 1
+  - in: body
+    name: body
+    description: Fields to update for the reminder. All fields are optional, only provided ones will be changed.
+    required: true
+    schema:
+      type: object
+      properties:
+        medicine_name:
+          type: string
+          description: The new name of the medicine.
+          example: "Ibuprofen"
+        dosage:
+          type: string
+          description: The new dosage of the medicine.
+          example: "200mg"
+        time_of_day:
+          type: string
+          description: The new time of day for the reminder (HH:MM).
+          pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+          example: "18:00"
+        frequency:
+          type: string
+          description: The new frequency of the reminder.
+          example: "as needed"
+        relation_to_meal:
+          type: string
+          description: The new relation to meal.
+          enum: ["before meal", "with meal", "after meal", "anytime"]
+          example: "before meal"
+        notification_type:
+          type: string
+          description: The new preferred type of notification.
+          enum: ["sms", "email", "app_notification"]
+          example: "email"
+        is_active:
+          type: boolean
+          description: Whether the reminder should be active or inactive.
+          example: false
+responses:
+  200:
+    description: Reminder updated successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Reminder updated successfully"
+        status:
+          type: string
+          example: "success"
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: Not Found - Reminder not found or access denied.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Reminder not found or access denied"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error updating reminder: Database write failed"
+        status:
+          type: string
+          example: "fail"

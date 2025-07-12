@@ -1,0 +1,67 @@
+tags:
+  - Doctors
+summary: Search for doctors by specialization and/or location
+description: Retrieves a list of doctors, optionally filtered by their specialization and/or location (city or pincode).
+produces:
+  - application/json
+parameters:
+  - in: query
+    name: specialization
+    type: string
+    required: false
+    description: Filter doctors by their medical specialization (e.g., "Cardiology", "Pediatrics").
+    example: "Pediatrics"
+  - in: query
+    name: location
+    type: string
+    required: false
+    description: Filter doctors by their location (e.g., city name or pincode).
+    # Note: The provided Python code does not currently use this 'location' parameter for filtering the database query.
+    example: "New Delhi"
+responses:
+  200:
+    description: Successfully retrieved a list of doctors.
+    schema:
+      type: object
+      properties:
+        doctors:
+          type: array
+          items:
+            type: object
+            properties:
+              doctor_id:
+                type: integer
+                description: Unique ID of the doctor.
+                example: 101
+              name:
+                type: string
+                description: Full name of the doctor.
+                example: "Dr. Alice Smith"
+              specialization:
+                type: string
+                description: The doctor's medical specialization.
+                example: "Pediatrics"
+              experience:
+                type: integer
+                description: Years of experience.
+                example: 15
+              rating:
+                type: number
+                format: float
+                description: Average rating of the doctor.
+                example: 4.8
+              hospital_name:
+                type: string
+                description: The name of the hospital where the doctor practices.
+                example: "City General Hospital"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error searching doctors: Database error"
+        status:
+          type: string
+          example: "fail"

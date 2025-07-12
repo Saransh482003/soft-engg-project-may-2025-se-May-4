@@ -1,0 +1,58 @@
+tags:
+  - Reminders
+summary: Delete a medicine reminder
+description: Deletes a specific medicine reminder from the system using its unique ID. The reminder must belong to the currently logged-in user.
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: reminder_id
+    type: integer
+    required: true
+    description: The unique ID of the reminder to delete.
+    example: 1
+responses:
+  200:
+    description: Reminder deleted successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Reminder deleted successfully"
+        status:
+          type: string
+          example: "success"
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: Not Found - Reminder not found or access denied.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Reminder not found or access denied"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error deleting reminder: Database error"
+        status:
+          type: string
+          example: "fail"

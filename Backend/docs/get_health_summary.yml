@@ -1,0 +1,57 @@
+tags:
+  - Health Summary
+summary: Get daily health summary for a user
+description: Retrieves a summary of medicine intake for a specific user for the current day, including counts of taken and skipped medicines, and detailed logs.
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: user_id
+    type: integer
+    required: true
+    description: The ID of the user for whom to retrieve the health summary.
+    example: 1
+responses:
+  200:
+    description: Successfully retrieved health summary.
+    schema:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: The date for which the summary is provided (current day).
+          example: "2025-07-12"
+        medicine_taken:
+          type: integer
+          description: The count of medicines marked as 'taken' for the day.
+          example: 3
+        medicine_skipped:
+          type: integer
+          description: The count of medicines marked as 'skipped' for the day.
+          example: 1
+        log_details:
+          type: array
+          items:
+            type: object
+            properties:
+              medicine_name:
+                type: string
+                description: Name of the medicine.
+                example: "Vitamin D"
+              status:
+                type: string
+                description: Status of the intake ('taken' or 'skipped').
+                example: "taken"
+              time:
+                type: string
+                description: Actual time the medicine was logged (HH:MM:SS).
+                example: "09:15:30"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error fetching health summary: Database error"
