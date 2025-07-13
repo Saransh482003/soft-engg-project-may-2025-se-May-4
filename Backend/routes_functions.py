@@ -5,7 +5,7 @@ import geocoder
 from modules.chatbot import Chatbot
 from modules.nearby_places import NearbyPlaces
 from flasgger.utils import swag_from
-
+import json
 
 
 
@@ -66,18 +66,83 @@ def function_routes(app, db, auth):
         data = request.get_json()
         lat = data.get('lat')
         lon = data.get('lon')
-        keyword = data.get('keyword','hospital')
-        radius = data.get('radius', 5000)
+        keyword = data.get('keyword', 'pharmacy').lower()
+        radius = data.get('radius', 1000)
 
         if lat is None or lon is None or keyword is None:
-            return jsonify({'response': 'Please provide lat, lon, and keyword.'}), 400
+            return jsonify({'error': 'Please provide lat, lon, and keyword.'}), 400
 
         try:
-            results = nearby_places.find_nearby_places(lat, lon, keyword, radius)
-            return jsonify({'response': results}), 200
-        except Exception as e:
-            return jsonify({'response': f"Error: {str(e)}"}), 500
+            google_results = nearby_places.find_nearby_places(lat, lon, keyword, radius)
+            
+            if not google_results:
+                return jsonify({'response': [], 'status': 'success'}), 200
 
+            synced_results = []
+            
+            target_model = None
+            if keyword in ['hospital', 'clinic']:
+                target_model = Hospitals
+            elif keyword == 'pharmacy':
+                target_model = Pharmacy
+            else:
+                 return jsonify({'error': f"Keyword '{keyword}' is not supported."}), 400
+
+            for place in google_results:
+                place_id = place.get('place_id')
+                if not place_id:
+                    continue
+
+                existing_record = db.session.query(target_model).filter_by(place_id=place_id).first()
+
+                if existing_record:
+                    synced_results.append(existing_record.to_dict())
+                    continue
+
+                details_data = nearby_places.place_details(place_id)
+                details = details_data.get('result', {}) if details_data else {}
+                if target_model == Hospitals:
+                    new_record = Hospitals(
+                        place_id=place_id,
+                        hospital_name=details.get('name', place.get('name')),
+                        address=details.get('formatted_address', place.get('vicinity')),
+                        latitudes=place.get('geometry', {}).get('location', {}).get('lat'),
+                        longitudes=place.get('geometry', {}).get('location', {}).get('lng'),
+                        website=details.get('website'),
+                        phone=details.get('formatted_phone_number'),
+                        rating=details.get('rating'),
+                        num_rating=details.get('user_ratings_total'),
+                        type=keyword
+                    )
+                
+                elif target_model == Pharmacy:
+                    new_record = Pharmacy(
+                        place_id=place_id,
+                        name=details.get('name', place.get('name')),
+                        address=details.get('formatted_address', place.get('vicinity')),
+                        latitude=place.get('geometry', {}).get('location', {}).get('lat'),
+                        longitude=place.get('geometry', {}).get('location', {}).get('lng'),
+                        phone_number=details.get('formatted_phone_number'),
+                        website=details.get('website'),
+                        rating=details.get('rating'),
+                        user_ratings_total=details.get('user_ratings_total'),
+                        opening_hours_json=json.dumps(details.get('opening_hours')) if details.get('opening_hours') else None,
+                        business_status=place.get('business_status')
+                    )
+                
+                db.session.add(new_record)
+                db.session.flush()
+                synced_results.append(new_record.to_dict())
+
+            db.session.commit()
+            
+            return jsonify({'response': synced_results, 'status': 'success'}), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
+               
+    # The place_details_route is now mostly for internal use or debugging,
     @app.route('/api/place-details', methods=['POST'])
     @swag_from("docs/place_details.yml")
     def place_details_route():
@@ -85,11 +150,10 @@ def function_routes(app, db, auth):
         place_id = data.get('place_id')
 
         if place_id is None:
-            return jsonify({'response': 'Please provide a place_id.'}), 400
+            return jsonify({'error': 'Please provide a place_id.'}), 400
 
         try:
             results = nearby_places.place_details(place_id)
             return jsonify({'response': results}), 200
         except Exception as e:
-            return jsonify({'response': f"Error: {str(e)}"}), 500
-
+            return jsonify({'error': f"Error: {str(e)}"}), 500

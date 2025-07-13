@@ -1,14 +1,8 @@
-from datetime import datetime,timezone
-from config import  db
+from datetime import datetime, timezone
+from config import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class Addresses(db.Model):
-    __tablename__ = 'addresses'
-    address_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    street_address = db.Column(db.Text)
-    city = db.Column(db.String)
-    state = db.Column(db.String)
-    pincode = db.Column(db.String)
-    country = db.Column(db.String)
+# The Addresses table has been removed.
 
 class Roles(db.Model):
     __tablename__ = 'roles'
@@ -33,7 +27,7 @@ class Hospitals(db.Model):
     __tablename__ = 'hospitals'
     hospital_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     hospital_name = db.Column(db.String, nullable=False)
-    address_id = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), nullable=False)
+    address = db.Column(db.Text, nullable=True) # Replaced Addresses relationship with a Text column
     place_id = db.Column(db.String, unique=True)
     latitudes = db.Column(db.Numeric(10, 6))
     longitudes = db.Column(db.Numeric(10, 6))
@@ -42,12 +36,27 @@ class Hospitals(db.Model):
     rating = db.Column(db.Numeric(2,1), nullable=True)
     num_rating = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String, nullable=True)
-    address = db.relationship('Addresses', backref='hospitals')
+
+    def to_dict(self):
+            return {
+                "hospital_id": self.hospital_id,
+                "hospital_name": self.hospital_name,
+                "address": self.address,
+                "place_id": self.place_id,
+                "latitudes": float(self.latitudes) if self.latitudes else None,
+                "longitudes": float(self.longitudes) if self.longitudes else None,
+                "website": self.website,
+                "phone": self.phone,
+                "rating": float(self.rating) if self.rating else None,
+                "num_rating": self.num_rating,
+                "type": self.type
+            }
+
 
 class Pharmacy(db.Model):
     __tablename__ = 'pharmacy'
     pharmacy_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    address_id = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), nullable=False)
+    address = db.Column(db.Text, nullable=True) # Replaced Addresses relationship with a Text column
     place_id = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -59,7 +68,23 @@ class Pharmacy(db.Model):
     opening_hours_json = db.Column(db.Text, nullable=True)
     business_status = db.Column(db.String(50), nullable=True)
     delivery_available = db.Column(db.Boolean, default=False)
-    address = db.relationship('Addresses', backref='pharmacies')
+    
+    def to_dict(self):
+        return {
+            "pharmacy_id": self.pharmacy_id,
+            "name": self.name,
+            "address": self.address,
+            "place_id": self.place_id,
+            "latitude": float(self.latitude) if self.latitude else None,
+            "longitude": float(self.longitude) if self.longitude else None,
+            "phone_number": self.phone_number,
+            "website": self.website,
+            "rating": float(self.rating) if self.rating else None,
+            "user_ratings_total": self.user_ratings_total,
+            "opening_hours_json": self.opening_hours_json,
+            "business_status": self.business_status,
+            "delivery_available": self.delivery_available
+        }
 
 class Doctors(db.Model):
     __tablename__ = 'doctors'
@@ -75,18 +100,24 @@ class Doctors(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False)
+    user_name = db.Column(db.String, nullable=False, unique=True)
     password_hash = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     mobile_number = db.Column(db.String, unique=True, nullable=False)
     gender = db.Column(db.String, nullable=True)
     dob = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    address_id = db.Column(db.Integer, db.ForeignKey('addresses.address_id'), nullable=True)
-    address = db.relationship('Addresses', backref='users')
+    address = db.Column(db.Text, nullable=True) 
+    pincode = db.Column(db.String(6), nullable=True)
     roles = db.relationship('Roles', secondary='user_roles', backref='users')
     favorite_doctors = db.relationship('Doctors', secondary='user_doctor_favorites', backref='favorited_by_users')
     favorite_pharmacies = db.relationship('Pharmacy', secondary='user_pharmacy_favorites', backref='favorited_by_users')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class UserRoles(db.Model):
     __tablename__ = 'user_roles'
@@ -141,8 +172,8 @@ class UserPharmacyFavorites(db.Model):
 class SymptomLogs(db.Model):
     __tablename__ = 'symptom_logs'
     log_id = db.Column(db.Integer, primary_key=True)
-    symptom_term = db.Column(db.String, nullable=False) # e.g., "headache", "dizziness"
-    pincode = db.Column(db.String) # Log the general area
+    symptom_term = db.Column(db.String, nullable=False)
+    pincode = db.Column(db.String)
     logged_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 
@@ -152,5 +183,5 @@ class YogaVideos(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
     video_url = db.Column(db.String, nullable=False, unique=True)
-    difficulty = db.Column(db.String) # e.g., "Beginner", "Chair Yoga"
+    difficulty = db.Column(db.String)
     duration_minutes = db.Column(db.Integer)

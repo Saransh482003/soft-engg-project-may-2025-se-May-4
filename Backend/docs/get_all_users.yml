@@ -1,23 +1,23 @@
 tags:
   - User
 summary: Get all users with pagination
-description: Retrieves a list of all registered users, with support for pagination to limit the number of results per page.
+description: Retrieves a paginated list of all registered users.
 produces:
   - application/json
 parameters:
   - in: query
     name: page
     type: integer
-    description: "Page number to retrieve"
+    description: "Page number to retrieve."
     default: 1
   - in: query
     name: per_page
     type: integer
-    description: "Number of users per page"
+    description: "Number of users per page."
     default: 10
 responses:
   200:
-    description: A list of users
+    description: A list of users.
     schema:
       type: object
       properties:
@@ -27,32 +27,35 @@ responses:
             type: object
             properties:
               user_id:
-                type: string
-                format: "uuid"
-                description: "Unique identifier for the user"
-                example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+                type: integer
+                description: "Unique identifier for the user."
+                example: 1
               user_name:
                 type: string
-                description: "Username of the user"
+                description: "Username of the user."
                 example: "johndoe"
               email:
                 type: string
-                description: "Email address of the user"
+                description: "Email address of the user."
                 format: "email"
                 example: "john.doe@example.com"
-              mobile:
+              mobile_number:
                 type: string
-                description: "Mobile number of the user"
+                description: "Mobile number of the user."
                 example: "1234567890"
               gender:
                 type: string
-                description: "Gender of the user"
+                description: "Gender of the user."
                 example: "Male"
               dob:
                 type: string
-                description: "Date of birth in YYYY-MM-DD format"
+                description: "Date of birth in YYYY-MM-DD format."
                 format: "date"
                 example: "1990-01-15"
+              address:
+                type: string
+                description: "User's residential address."
+                example: "123 Main St, Anytown, USA"
         pagination:
           type: object
           properties:
@@ -72,7 +75,7 @@ responses:
           type: string
           example: "success"
   500:
-    description: Internal Server Error
+    description: Internal Server Error.
     schema:
       type: object
       properties:

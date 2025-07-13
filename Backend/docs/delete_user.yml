@@ -7,14 +7,13 @@ produces:
 parameters:
   - in: path
     name: user_id
-    type: string
+    type: integer
     required: true
-    description: "ID of the user to delete"
-    format: "uuid"
-    example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    description: "ID of the user to delete."
+    example: 1
 responses:
   200:
-    description: User deleted successfully
+    description: User deleted successfully.
     schema:
       type: object
       properties:
@@ -25,7 +24,7 @@ responses:
           type: string
           example: "success"
   404:
-    description: User not found
+    description: User not found.
     schema:
       type: object
       properties:
@@ -36,7 +35,7 @@ responses:
           type: string
           example: "fail"
   500:
-    description: Internal Server Error
+    description: Internal Server Error.
     schema:
       type: object
       properties:

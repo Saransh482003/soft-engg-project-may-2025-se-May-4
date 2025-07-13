@@ -7,7 +7,7 @@ produces:
   - application/json
 responses:
   200:
-    description: Current user details
+    description: Current user details.
     schema:
       type: object
       properties:
@@ -15,37 +15,40 @@ responses:
           type: object
           properties:
             user_id:
-              type: string
-              format: "uuid"
-              description: "Unique identifier for the user"
-              example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+              type: integer
+              description: "Unique identifier for the user."
+              example: 1
             user_name:
               type: string
-              description: "Username of the user"
+              description: "Username of the user."
               example: "johndoe"
             email:
               type: string
-              description: "Email address of the user"
+              description: "Email address of the user."
               format: "email"
               example: "john.doe@example.com"
-            mobile:
+            mobile_number:
               type: string
-              description: "Mobile number of the user"
+              description: "Mobile number of the user."
               example: "1234567890"
             gender:
               type: string
-              description: "Gender of the user"
+              description: "Gender of the user."
               example: "Male"
             dob:
               type: string
-              description: "Date of birth in YYYY-MM-DD format"
+              description: "Date of birth in YYYY-MM-DD format."
               format: "date"
               example: "1990-01-15"
+            address:
+              type: string
+              description: "User's residential address."
+              example: "123 Main St, Anytown, USA"
         status:
           type: string
           example: "success"
   401:
-    description: Unauthorized - Not authenticated
+    description: Unauthorized - Not authenticated.
     schema:
       type: object
       properties:
@@ -56,7 +59,7 @@ responses:
           type: string
           example: "fail"
   404:
-    description: User not found (e.g., session invalid or user deleted)
+    description: User not found (e.g., session invalid or user deleted).
     schema:
       type: object
       properties:
@@ -67,7 +70,7 @@ responses:
           type: string
           example: "fail"
   500:
-    description: Internal Server Error
+    description: Internal Server Error.
     schema:
       type: object
       properties:

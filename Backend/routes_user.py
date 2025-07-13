@@ -10,21 +10,21 @@ from sqlalchemy import func
 
 
 def routes_user(app, db):
-    @app.route('/api/users', methods=['POST'])
+    @app.route('/api/create_user', methods=['POST'])
     @swag_from("docs/create_user.yml")
     def create_user():
         try:
             data = request.get_json()
-            required_fields = ['user_name', 'password', 'email', 'mobile','gender', 'dob']
+            required_fields = ['user_name', 'password', 'email', 'mobile_number','gender', 'dob']
             for field in required_fields:
                 if not data.get(field):
                     return jsonify({'error': f'{field} is required', 'status': 'fail'}), 400
             
             # Check if user already exists
             existing_user = User.query.filter(
-                (User.user_name == data['user_name']) &
-                (User.email == data['email']) &
-                (User.mobile == data['mobile']) 
+                
+                (User.email == data['email']) |
+                (User.mobile_number == data['mobile_number']) 
             ).first()
             
             if existing_user:
@@ -32,14 +32,14 @@ def routes_user(app, db):
             
             # Create new user
             new_user = User(
-                user_id=str(uuid.uuid4()),
                 user_name=data['user_name'],
-                password=data['password'], 
                 email=data['email'],
-                mobile=data['mobile'],
+                mobile_number=data['mobile_number'],
                 gender=data.get('gender'),
-                dob=datetime.strptime(data['dob'], "%Y-%m-%d").date() if data.get('dob') else None
+                dob=datetime.strptime(data['dob'], "%Y-%m-%d").date() if data.get('dob') else None,
+                address=data.get('address') # Simply get the address string
             )
+            new_user.set_password(data['password'])
             
             db.session.add(new_user)
             db.session.commit()
@@ -51,9 +51,10 @@ def routes_user(app, db):
                     'user_id': new_user.user_id,
                     'user_name': new_user.user_name,
                     'email': new_user.email,
-                    'mobile': new_user.mobile,
+                    'mobile_number': new_user.mobile_number,
                     'gender': new_user.gender,
-                    'dob': new_user.dob.isoformat() if new_user.dob else None
+                    'dob': new_user.dob.isoformat() if new_user.dob else None,
+                    'address': new_user.address
                 }
             }), 201
             
@@ -81,9 +82,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 })
             
             return jsonify({
@@ -101,7 +103,7 @@ def routes_user(app, db):
             return jsonify({'error': f'Error fetching users: {str(e)}', 'status': 'fail'}), 500
     
     # READ - Get user by ID
-    @app.route('/api/users/<string:user_id>', methods=['GET'])
+    @app.route('/api/users/<int:user_id>', methods=['GET'])
     @swag_from("docs/get_user_by_id.yml")
     def get_user_by_id(user_id):
         try:
@@ -115,9 +117,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 },
                 'status': 'success'
             }), 200
@@ -145,9 +148,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 })
             
             return jsonify({
@@ -160,7 +164,7 @@ def routes_user(app, db):
             return jsonify({'error': f'Error searching users: {str(e)}', 'status': 'fail'}), 500
     
     # UPDATE - Update user by ID
-    @app.route('/api/users/<string:user_id>', methods=['PUT'])
+    @app.route('/api/users/<int:user_id>', methods=['PUT'])
     @swag_from("docs/update_user.yml")
     def update_user(user_id):
         try:
@@ -171,39 +175,30 @@ def routes_user(app, db):
             
             data = request.get_json()
             
-            # Check if email or mobile is being changed and already exists
+            # Check for uniqueness constraints
             if 'email' in data and data['email'] != user.email:
-                existing_email = User.query.filter_by(email=data['email']).first()
-                if existing_email:
+                if User.query.filter_by(email=data['email']).first():
                     return jsonify({'error': 'Email already exists', 'status': 'fail'}), 409
             
-            if 'mobile' in data and data['mobile'] != user.mobile:
-                existing_mobile = User.query.filter_by(mobile=data['mobile']).first()
-                if existing_mobile:
+            if 'mobile_number' in data and data['mobile_number'] != user.mobile_number:
+                if User.query.filter_by(mobile_number=data['mobile_number']).first():
                     return jsonify({'error': 'Mobile number already exists', 'status': 'fail'}), 409
             
             if 'user_name' in data and data['user_name'] != user.user_name:
-                existing_username = User.query.filter_by(user_name=data['user_name']).first()
-                if existing_username:
+                if User.query.filter_by(user_name=data['user_name']).first():
                     return jsonify({'error': 'Username already exists', 'status': 'fail'}), 409
             
-            # Update fields
-            if 'user_name' in data:
-                user.user_name = data['user_name']
+            # Update user fields
+            user.user_name = data.get('user_name', user.user_name)
             if 'password' in data:
-                user.password = data['password']  # In production, hash this password
-            if 'email' in data:
-                user.email = data['email']
-            if 'mobile' in data:
-                user.mobile = data['mobile']
-            if 'gender' in data:
-                user.gender = data['gender']
+                user.set_password(data['password'])
+            user.email = data.get('email', user.email)
+            user.mobile_number = data.get('mobile_number', user.mobile_number)
+            user.gender = data.get('gender', user.gender)
+            user.address = data.get('address', user.address)
             if 'dob' in data:
-                if data['dob']:
-                    user.dob = datetime.strptime(data['dob'], "%Y-%m-%d").date()
-                else:
-                    user.dob = None
-            
+                user.dob = datetime.strptime(data['dob'], "%Y-%m-%d").date() if data.get('dob') else None
+
             db.session.commit()
             
             return jsonify({
@@ -213,9 +208,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 }
             }), 200
             
@@ -226,7 +222,7 @@ def routes_user(app, db):
             return jsonify({'error': f'Error updating user: {str(e)}', 'status': 'fail'}), 500
     
     # UPDATE - Partial update user by ID
-    @app.route('/api/users/<string:user_id>', methods=['PATCH'])
+    @app.route('/api/users/<int:user_id>', methods=['PATCH'])
     @swag_from("docs/partial_user_update.yml")
     def partial_update_user(user_id):
         try:
@@ -237,19 +233,16 @@ def routes_user(app, db):
             
             data = request.get_json()
             
-            # Only update provided fields
             for key, value in data.items():
                 if key == 'user_id':
-                    continue  # Don't allow updating user_id
-                elif key == 'dob' and value:
-                    user.dob = datetime.strptime(value, "%Y-%m-%d").date()
-                elif key == 'dob' and not value:
-                    user.dob = None
+                    continue
+                elif key == 'dob':
+                    user.dob = datetime.strptime(value, "%Y-%m-%d").date() if value else None
+                elif key == 'password':
+                    user.set_password(value)
                 elif hasattr(user, key):
-                    # Check for uniqueness for email, mobile, user_name
-                    if key in ['email', 'mobile', 'user_name'] and value != getattr(user, key):
-                        existing = User.query.filter(getattr(User, key) == value).first()
-                        if existing:
+                    if key in ['email', 'mobile_number', 'user_name'] and value != getattr(user, key):
+                        if User.query.filter(getattr(User, key) == value).first():
                             return jsonify({'error': f'{key} already exists', 'status': 'fail'}), 409
                     setattr(user, key, value)
             
@@ -262,9 +255,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 }
             }), 200
             
@@ -275,7 +269,7 @@ def routes_user(app, db):
             return jsonify({'error': f'Error updating user: {str(e)}', 'status': 'fail'}), 500
     
     # DELETE - Delete user by ID
-    @app.route('/api/users/<string:user_id>', methods=['DELETE'])
+    @app.route('/api/users/<int:user_id>', methods=['DELETE'])
     @swag_from("docs/delete_user.yml")
     def delete_user(user_id):
         try:
@@ -308,10 +302,9 @@ def routes_user(app, db):
             
             user = User.query.filter_by(user_name=data['user_name']).first()
             
-            if not user or user.password != data['password']:  # In production, use proper password hashing
+            if not user or not user.check_password(data['password']):
                 return jsonify({'error': 'Invalid credentials', 'status': 'fail'}), 401
             
-            # Store user session
             session['user_id'] = user.user_id
             session['user_name'] = user.user_name
             
@@ -322,9 +315,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 }
             }), 200
             
@@ -355,7 +349,7 @@ def routes_user(app, db):
             user = User.query.filter_by(user_id=session['user_id']).first()
             
             if not user:
-                session.clear()  # Clear invalid session
+                session.clear()
                 return jsonify({'error': 'User not found', 'status': 'fail'}), 404
             
             return jsonify({
@@ -363,9 +357,10 @@ def routes_user(app, db):
                     'user_id': user.user_id,
                     'user_name': user.user_name,
                     'email': user.email,
-                    'mobile': user.mobile,
+                    'mobile_number': user.mobile_number,
                     'gender': user.gender,
-                    'dob': user.dob.isoformat() if user.dob else None
+                    'dob': user.dob.isoformat() if user.dob else None,
+                    'address': user.address
                 },
                 'status': 'success'
             }), 200

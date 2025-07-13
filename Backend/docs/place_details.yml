@@ -1,7 +1,7 @@
 tags:
   - Nearby Places
 summary: Get detailed information about a specific place
-description: This endpoint retrieves comprehensive details for a place using its unique place ID.
+description: Retrieves comprehensive details for a place using its unique Google Place ID. This endpoint directly queries the Google Places API for details.
 consumes:
   - application/json
 produces:
@@ -18,7 +18,7 @@ parameters:
       properties:
         place_id:
           type: string
-          description: The unique ID of the place obtained from the /api/nearby_places endpoint.
+          description: The unique Google Place ID (e.g., obtained from /api/nearby_places).
           example: "ChIJUQ_M-R3GwoAR4q3W4C3k0j0"
 responses:
   200:
@@ -28,55 +28,85 @@ responses:
       properties:
         response:
           type: object
+          description: Detailed information about the place from Google Places API.
           properties:
-            name:
-              type: string
-              description: Name of the place.
-              example: "Good Health Hospital"
-            address:
-              type: string
-              description: Formatted address of the place.
-              example: "123 Main St, Anytown, USA"
-            phone_number:
-              type: string
-              description: Phone number of the place.
-              example: "+12135551234"
-            website:
-              type: string
-              description: Website URL of the place.
-              example: "http://www.goodhealthhospital.com"
-            rating:
-              type: number
-              format: float
-              description: User rating of the place.
-              example: 4.5
-            opening_hours:
+            address_components:
               type: array
               items:
-                type: string
-              description: Daily opening hours.
-              example: ["Monday: 9 AM – 5 PM", "Tuesday: 9 AM – 5 PM"]
+                type: object
+                properties:
+                  long_name: { type: string }
+                  short_name: { type: string }
+                  types: { type: array, items: { type: string } }
+            formatted_address:
+              type: string
+              example: "123 Main St, Anytown, USA"
+            formatted_phone_number:
+              type: string
+              example: "+1 213-555-1234"
             geometry:
               type: object
               properties:
                 location:
                   type: object
                   properties:
-                    lat:
-                      type: number
-                      format: float
-                      example: 34.0510
-                    lng:
-                      type: number
-                      format: float
-                      example: -118.2450
-            # ... potentially other details like reviews, photos, etc.
+                    lat: { type: number, format: float }
+                    lng: { type: number, format: float }
+            name:
+              type: string
+              example: "Good Health Hospital"
+            place_id:
+              type: string
+              example: "ChIJUQ_M-R3GwoAR4q3W4C3k0j0"
+            rating:
+              type: number
+              format: float
+              example: 4.5
+            reviews:
+              type: array
+              items:
+                type: object
+                properties:
+                  author_name: { type: string }
+                  rating: { type: integer }
+                  text: { type: string }
+            types:
+              type: array
+              items: { type: string }
+            url:
+              type: string
+              format: url
+              example: "https://maps.google.com/?cid=..."
+            utc_offset:
+              type: integer
+              example: -480
+            website:
+              type: string
+              format: url
+              example: "http://www.goodhealthhospital.com"
+            user_ratings_total:
+              type: integer
+              example: 120
+            opening_hours:
+              type: object
+              properties:
+                open_now: { type: boolean }
+                periods:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      open: { type: object, properties: { day: { type: integer }, time: { type: string } } }
+                      close: { type: object, properties: { day: { type: integer }, time: { type: string } } }
+                weekday_text:
+                  type: array
+                  items: { type: string }
   400:
     description: Bad Request - Missing place ID.
     schema:
       type: object
       properties:
-        response:
+        error:
           type: string
           example: "Please provide a place_id."
   500:
@@ -84,6 +114,6 @@ responses:
     schema:
       type: object
       properties:
-        response:
+        error:
           type: string
           example: "Error: Failed to get place details."

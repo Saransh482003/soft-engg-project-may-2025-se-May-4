@@ -6,7 +6,7 @@ produces:
   - application/json
 responses:
   200:
-    description: Logout successful
+    description: Logout successful.
     schema:
       type: object
       properties:
@@ -17,13 +17,13 @@ responses:
           type: string
           example: "success"
   500:
-    description: Internal Server Error
+    description: Internal Server Error.
     schema:
       type: object
       properties:
         error:
           type: string
-          example: "Logout error: Some internal server issue"
+          example: "Logout error: Some internal error"
         status:
           type: string
           example: "fail"
