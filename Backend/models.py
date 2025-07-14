@@ -27,7 +27,7 @@ class Hospitals(db.Model):
     __tablename__ = 'hospitals'
     hospital_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     hospital_name = db.Column(db.String, nullable=False)
-    address = db.Column(db.Text, nullable=True) # Replaced Addresses relationship with a Text column
+    address = db.Column(db.Text, nullable=True) 
     place_id = db.Column(db.String, unique=True)
     latitudes = db.Column(db.Numeric(10, 6))
     longitudes = db.Column(db.Numeric(10, 6))
