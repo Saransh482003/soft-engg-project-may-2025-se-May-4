@@ -128,11 +128,12 @@ function isToday(dateString) {
 
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHRAVAN</span>
+        <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+        <span style="margin-left: 10px">SHRAVAN</span>
       </div>
       <div class="nav-right">
         <button class="back-button" @click="router.push('/caretaker')">
-          ← Back to Dashboard
+          🏠 Home
         </button>
       </div>
     </nav>
@@ -204,8 +205,6 @@ function isToday(dateString) {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 
 * {
   box-sizing: border-box;
@@ -251,7 +250,13 @@ body, html {
   font-weight: 600;
   color: #3b82f6;
 }
-
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
+}
 .nav-right {
   display: flex;
   align-items: center;

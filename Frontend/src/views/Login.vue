@@ -42,48 +42,23 @@ async function onSubmit() {
         <img src="../assets/caretaker.png" alt="Expert Caretaker" class="caretaker-image">
       </div>
       <div class="card-right">
-        <h1 class="text-center">🔐 Login to SHRAVAN</h1>
-        <p class="text-center subtitle">Your wellness, our priority</p>
-        <form @submit.prevent="onSubmit">
-          <div class="mb-3">
-            <label for="email" class="form-label">📧 Email Address</label>
-            <input type="email" class="form-control" id="email" v-model="email" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">🔒 Password</label>
-            <input type="password" class="form-control" id="password" v-model="password" required>
-          </div>
       <h1 class="text-center">🔐 Login to SHARVAN</h1>
       <p class="text-center subtitle">Your wellness, our priority</p>
-      <form @submit.prevent="onSubmit" class="text-box-wrapper">
-        <!-- <div class="mb-3">
-          <label for="email" class="form-label">📧 Email Address</label>
-          <input type="email" class="form-control" id="email" v-model="email" required>
+      <form @submit.prevent="onSubmit" class="form-wrapper">
+        <div class="form-group">
+          <label for="email">📧 Email Address</label>
+          <input type="email" id="email"  placeholder="Enter your email" v-model="email" required />
         </div>
 
-        <div class="mb-3">
-          <label for="password" class="form-label">🔒 Password</label>
-          <input type="password" class="form-control" id="password" v-model="password" required>
-        </div> -->
+        <div class="form-group">
+          <label for="password">🔒 Password</label>
+          <input type="password" id="password" placeholder="Enter your password" v-model="password" required />
+        </div>
 
-        <div class="input-row">
-  <label for="email">📧 Email Address</label>
-  <input type="email" id="email" v-model="email" required>
-</div>
+        <button type="submit" class="login-button">Login</button>
+      </form>
 
-<div class="input-row">
-  <label for="password">🔒 Password</label>
-  <input type="password" id="password" v-model="password" required>
-</div>
-
-
-
-          <div class="d-flex justify-content-center mb-3">
-            <button type="submit" class="btn login-button">Login</button>
-          </div>
-        </form>
-
+        <br>
         <div class="d-flex justify-content-center mt-2">
           <span class="me-2">Don't have an account?</span>
           <RouterLink class="btn btn-outline-light" to="/register">Register</RouterLink>
@@ -95,8 +70,6 @@ async function onSubmit() {
 
 <style scoped>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 .login-container {
   height: 100vh;
   width: 100vw;
@@ -107,6 +80,41 @@ async function onSubmit() {
   font-family: 'Poppins', sans-serif;
   position: fixed; 
   inset: 0;
+}
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* spacing between fields */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-group label {
+  font-size: 1.2rem;         /* larger label text */
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group input {
+  padding: 14px;
+  font-size: 1.1rem;         /* larger input text */
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.form-group input::placeholder {
+  color: #9ca3af; /* light grey placeholder */
+  font-weight: 400;
 }
 
 .login-card {
@@ -220,6 +228,7 @@ h1 {
   font-weight: bold;
   text-align: left;
   color: #4a148c;
+  font-size: large;
 }
 
 .form-control, .form-select {
@@ -330,56 +339,4 @@ h1 {
     font-size: 1.8rem;
   }
 }
-
-</style>
-
-.input-group-center {
-  display: flex;
-  flex-direction: column;
-  .form-label{
-    text-align: left;
-  }
-}
-
-.input-group-center input {
-  width: 80%; /* Adjust width as needed */
-  max-width: 400px;
-}
-.text-box-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.input-group-center input {
-  width: 80%; /* Adjust width as needed */
-  max-width: 400px;
-}
-.text-box-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.input-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  gap: 10px;
-}
-
-.input-row label {
-  flex: 1;
-  text-align: left;
-  font-weight: bold;
-  color: #4a148c;
-}
-
-.input-row input {
-  flex: 2;
-  border-radius: 8px;
-  border: 1px solid #ce93d8;
-  padding: 10px;
-}
-
-
 </style>

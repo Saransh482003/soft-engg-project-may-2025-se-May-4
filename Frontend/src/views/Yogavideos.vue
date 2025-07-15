@@ -26,7 +26,10 @@ const yogaVideos = ref([
   <div class="yoga-container">
     <div class="top-bar">
       <RouterLink to="/userdashboard" class="home-btn">🏠 Home</RouterLink>
-      <h2>🧘 Yoga Videos for Seniors</h2>
+      <div>
+      <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+      <span style="margin-left: 10px">SHRAVAN</span>
+      </div>
     </div>
 
     <div class="video-grid">
@@ -48,9 +51,16 @@ const yogaVideos = ref([
   padding: 20px;
   font-family: sans-serif;
 }
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
+}
 .top-bar {
   display: flex;
-  align-items: center;
+  align-items: left;
   justify-content: space-between;
   background-color: #ffe6f0;
   color: black;

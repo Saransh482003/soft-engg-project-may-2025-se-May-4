@@ -1,16 +1,14 @@
 <template>
   <div class="chatbot-page">
-    <div class="chatbot-header">
-      <RouterLink to="/userdashboard" class="back-button">
-        <span class="material-icons">arrow_back</span>
-      </RouterLink>
-      <h1>SHRAVAN Voice Assistant</h1>
-      <div class="theme-toggle">
-        <button @click="toggleDarkMode" class="theme-btn">
-          <span class="material-icons">{{ darkMode ? 'light_mode' : 'dark_mode' }}</span>
-        </button>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+        <span style="margin-left: 10px">SHRAVAN</span>
       </div>
-    </div>
+      <div class="nav-right">
+        <button class="back-button" @click="goBack">🏠 Home</button>
+      </div>
+    </nav>
 
     <div class="chatbot-container">
       <div class="chat-header">
@@ -86,7 +84,8 @@ const supportsSpeech = ref(false);
 const isListening = ref(false);
 const isProcessing = ref(false);
 const messagesContainer = ref<HTMLElement | null>(null);
-const darkMode = ref(localStorage.getItem('darkMode') === 'true');
+const isDarkMode = ref(localStorage.getItem('darkModePreference') === 'dark');
+//const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 let recognition: any = null;
 
@@ -104,14 +103,14 @@ onMounted(() => {
   scrollToBottom();
   
 
-  document.body.classList.toggle('dark-mode', darkMode.value);
+  document.body.classList.toggle('dark-mode', isDarkMode.value);
   
 
   // Scroll to bottom of messages
   scrollToBottom();
   
   // Check for dark mode preference
-  document.body.classList.toggle('dark-mode', darkMode.value);
+  document.body.classList.toggle('dark-mode', isDarkMode.value);
   
   // Initialize speech recognition
 
@@ -169,65 +168,53 @@ const getCurrentTime = () => {
 
 const sendMessage = async () => {
   if (!userInput.value.trim() || isProcessing.value) return;
-  
+
   const messageText = userInput.value;
   userInput.value = '';
   isProcessing.value = true;
-  
 
   // Add user message
-
-  messages.value.push({ 
-    text: messageText, 
+  messages.value.push({
+    text: messageText,
     sender: 'user',
     time: getCurrentTime()
   });
 
   try {
-
-
+    // Simulate response with delay
     setTimeout(() => {
-
-
-    // In a real app, you'd connect to your backend
-    // For now, simulate a response with a delay
-    setTimeout(() => {
-      // This is where you'd make the actual API call
-      // const res = await axios.post('http://localhost:5000/api/chatbot', {
-      //   message: messageText,
-      // });
-      
-      // Simulated response based on common questions
-
       let botResponse = "I'm sorry, I don't understand that yet. My capabilities are still developing.";
-      
-      if (messageText.toLowerCase().includes('medicine')) {
+
+      const lowerText = messageText.toLowerCase();
+
+      if (lowerText.includes('medicine')) {
         botResponse = "I can help you track your medications. Would you like to see your medicine schedule or set a reminder?";
-      } else if (messageText.toLowerCase().includes('doctor') || messageText.toLowerCase().includes('appointment')) {
+      } else if (lowerText.includes('doctor') || lowerText.includes('appointment')) {
         botResponse = "You can find nearby doctors in the Doctor Finder section. Would you like me to open that for you?";
-      } else if (messageText.toLowerCase().includes('emergency')) {
+      } else if (lowerText.includes('emergency')) {
         botResponse = "If you're experiencing an emergency, please use the Emergency SOS feature or call emergency services immediately.";
-      } else if (messageText.toLowerCase().includes('hello') || messageText.toLowerCase().includes('hi')) {
+      } else if (lowerText.includes('hello') || lowerText.includes('hi')) {
         botResponse = "Hello! How can I assist you with your health needs today?";
       }
-      
-      messages.value.push({ 
-        text: botResponse, 
+
+      messages.value.push({
+        text: botResponse,
         sender: 'bot',
         time: getCurrentTime()
       });
-      
+
       isProcessing.value = false;
     }, 1000);
   } catch (err) {
-    messages.value.push({ 
-      text: 'Sorry, I couldn\'t process your request. Please try again.', 
+    messages.value.push({
+      text: "Sorry, I couldn't process your request. Please try again.",
       sender: 'bot',
       time: getCurrentTime()
     });
     isProcessing.value = false;
   }
 };
+
 
 
 // Trigger voice input
@@ -251,14 +238,16 @@ const scrollToBottom = () => {
 
 
 
-
+function goBack() {
+  router.push('/userdashboard');
+}
 // Toggle dark mode
 
-const toggleDarkMode = () => {
-  darkMode.value = !darkMode.value;
-  localStorage.setItem('darkMode', darkMode.value.toString());
-  document.body.classList.toggle('dark-mode', darkMode.value);
-};
+// const toggleDarkMode = () => {
+//   darkMode.value = !darkMode.value;
+//   localStorage.setItem('darkMode', darkMode.value.toString());
+//   document.body.classList.toggle('dark-mode', darkMode.value);
+// };
 </script>
 
 <style scoped>
@@ -285,10 +274,17 @@ const toggleDarkMode = () => {
   margin: 0;
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
 
+.back-button, .action-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+} 
 
 .chatbot-header {
   display: flex;
@@ -306,18 +302,18 @@ const toggleDarkMode = () => {
   margin: 0;
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
-
-  justify-content: center;
-  width: 36px;
+.logo-image {
   height: 36px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  text-decoration: none;
-  transition: background-color 0.3s;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
+}
+
+.back-button{
+  background-color: #f3f4f6; color: #4b5563;
+  border: none; padding: 10px 15px; border-radius: 10px;
+  font-weight: 500; cursor: pointer; transition: all 0.3s ease;
 }
 
 .back-button:hover {
@@ -340,9 +336,6 @@ const toggleDarkMode = () => {
 
 .theme-btn:hover {
   background-color: rgba(255, 255, 255, 0.3);
-}
-
-
 }
 
 .theme-btn:hover {
@@ -395,7 +388,6 @@ const toggleDarkMode = () => {
   color: var(--text-muted, #666);
 }
 
-}
 
 .chat-info {
   display: flex;
@@ -547,8 +539,6 @@ const toggleDarkMode = () => {
 }
 
 
-}
-
 .message-content p {
   margin: 0;
   line-height: 1.4;
@@ -663,6 +653,66 @@ const toggleDarkMode = () => {
   --btn-bg: rgba(108, 114, 220, 0.2);
   --btn-hover-bg: rgba(108, 114, 220, 0.3);
   --icon-bg: rgba(108, 114, 220, 0.2);
+}
+
+.navbar {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dark .navbar {
+  background-color: #2a2a2a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.dark .logo {
+  color: #60a5fa;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark .back-button {
+  background-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.back-button:hover {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  transform: translateY(-2px);
+}
+
+.dark .back-button:hover {
+  background-color: #6b7280;
 }
 
 .chat-avatar {

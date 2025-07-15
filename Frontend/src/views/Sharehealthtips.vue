@@ -152,7 +152,7 @@ async function submitPost() {
 }
 
 function goBack() {
-  router.push('/tertiary-dashboard');
+  router.push('/tertiaryuser');
 }
 
 function getCategoryLabel(categoryValue) {
@@ -170,11 +170,12 @@ function truncateText(text, length = 120) {
 
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHRAVAN</span>
+        <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+        <span style="margin-left: 10px">SHRAVAN</span>
       </div>
       <div class="nav-right">
         <button class="back-button" @click="goBack">
-          ← Back to Dashboard
+          🏠 Home
         </button>
       </div>
     </nav>
@@ -299,9 +300,6 @@ function truncateText(text, length = 120) {
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -337,7 +335,13 @@ function truncateText(text, length = 120) {
   font-weight: 600;
   color: #059669;
 }
-
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
+}
 .nav-right {
   display: flex;
   align-items: center;

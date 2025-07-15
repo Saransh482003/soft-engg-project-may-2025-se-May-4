@@ -149,15 +149,12 @@ onMounted(() => {
   <div class="doctor-finder-container" :class="{ 'dark': isDarkMode }">
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHRAVAN</span>
+      <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+      <span style="margin-left: 10px">SHRAVAN</span>
       </div>
       <div class="nav-right">
         <div class="nav-actions">
-          <button class="theme-button" @click="toggleDarkMode">
-            {{ isDarkMode ? '☀️ Light' : '🌙 Dark' }}
-          </button>
-          <button class="back-button" @click="goHome">Back to Home</button>
-          <button class="logout-button" @click="logout">Logout</button>
+          <button class="back-button" @click="goHome">🏠 Home</button>
         </div>
       </div>
     </nav>
@@ -262,9 +259,14 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.logo {
-  font-size: 1.5rem; font-weight: 600; color: #3b82f6;
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
 }
+
 
 .dark .logo { color: #60a5fa; }
 

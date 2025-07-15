@@ -125,7 +125,8 @@ function getLocation() {
   <div class="dashboard-container" :class="{ 'dark': isDarkMode }">
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHRAVAN</span>
+        <img src="../assets/Sharvan_logo.jpeg" alt="Sharvan Logo" class="logo-image" />
+        <span style="margin-left: 10px">SHRAVAN</span>
       </div>
       <div class="nav-right">
         <div class="nav-actions">
@@ -249,10 +250,12 @@ function getLocation() {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #3b82f6;
+.logo-image {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle; /* Ensures inline alignment with text */
 }
 
 .dark .logo {
@@ -545,5 +548,6 @@ h1 {
   .card-container {
     grid-template-columns: 1fr;
   }
+
 }
 </style>

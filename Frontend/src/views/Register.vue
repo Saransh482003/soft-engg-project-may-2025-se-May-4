@@ -93,25 +93,25 @@ async function onSubmit() {
         <form @submit.prevent="onSubmit">
           <div class="mb-3">
             <label for="name" class="form-label">🧑 Name</label>
-            <input type="text" class="form-control" id="name" v-model="name" required>
+            <input type="text" class="form-control" id="name" placeholder="Enter you name" required>
           </div>
 
           <div class="form-row">
             <div class="mb-3 form-col">
               <label for="email" class="form-label">📧 Email</label>
-              <input type="email" class="form-control" id="email" v-model="email" required>
+              <input type="email" class="form-control" id="email" v-model="email" placeholder="Enter your e-mail" required>
             </div>
 
             <div class="mb-3 form-col">
               <label for="password" class="form-label">🔐 Password (min 6 chars)</label>
-              <input type="password" class="form-control" id="password" v-model="password" required>
+              <input type="password" class="form-control" id="password" v-model="password" placeholder="Enter a strong password" required>
             </div>
           </div>
 
           <div class="form-row">
             <div class="mb-3 form-col">
               <label for="mobile" class="form-label">📱 Mobile Number</label>
-              <input type="tel" class="form-control" id="mobile" v-model="mobile" required>
+              <input type="tel" class="form-control" id="mobile" v-model="mobile" placeholder="Enter your mobile number" required>
             </div>
 
             <div class="mb-3 form-col">
@@ -132,12 +132,12 @@ async function onSubmit() {
 
           <div class="mb-3">
             <label for="address" class="form-label">🏠 Address</label>
-            <textarea class="form-control" id="address" rows="2" v-model="address" required></textarea>
+            <textarea class="form-control" id="address" rows="2" v-model="address" placeholder="Flat no./Appartment Name/Street name" required></textarea>
           </div>
 
           <div class="mb-3">
             <label for="pin" class="form-label">📮 Pincode</label>
-            <input type="text" class="form-control" id="pin" v-model="pin" required>
+            <input type="text" class="form-control" id="pin" v-model="pin" placeholder="pincode" required>
           </div>
 
           <div class="mb-3">
@@ -178,8 +178,6 @@ async function onSubmit() {
 </template>
 
 <style scoped>
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .register-container {
   height: 100vh;
