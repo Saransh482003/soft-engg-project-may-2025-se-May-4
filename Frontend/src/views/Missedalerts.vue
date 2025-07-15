@@ -9,25 +9,14 @@ const loading = ref(true);
 const error = ref(null);
 const linkedSeniorName = ref('');
 
-// This would normally come from auth store or API
+
 const caretakerEmail = 'john.caretaker@example.com';
 
 onMounted(async () => {
   try {
-    // Simulate API call delay
+
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In real implementation, this would be a fetch call to your backend
-    // const response = await fetch('/api/medication-updates', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ caretakerEmail })
-    // });
-    // const data = await response.json();
-    // medicationUpdates.value = data.medicationUpdates;
-    // linkedSeniorName.value = data.seniorName;
-    
-    // Mock data for demonstration
+
     linkedSeniorName.value = 'Rajesh Sharma';
     medicationUpdates.value = getMockData();
     loading.value = false;
@@ -38,11 +27,11 @@ onMounted(async () => {
   }
 });
 
-// Mock data generator - this would be replaced by actual API data
+
 function getMockData() {
   return [
     {
-      date: '2025-06-16', // Today
+      date: '2025-06-16', 
       medications: [
         {
           name: 'Lisinopril',
@@ -68,7 +57,7 @@ function getMockData() {
       ]
     },
     {
-      date: '2025-06-15', // Yesterday
+      date: '2025-06-15', 
       medications: [
         {
           name: 'Lisinopril',
@@ -136,7 +125,7 @@ function isToday(dateString) {
 
 <template>
   <div class="medication-dashboard">
-    <!-- Section 1: Navigation Bar -->
+
     <nav class="navbar">
       <div class="logo">
         <span>🌿 SHARVAN</span>
@@ -148,27 +137,27 @@ function isToday(dateString) {
       </div>
     </nav>
 
-    <!-- Section 2: Header Section -->
+
     <section class="header-section">
       <h1>Medication Tracking</h1>
       <p class="subtitle">Daily medication status for {{ linkedSeniorName }}</p>
     </section>
 
-    <!-- Section 3: Content Area -->
+
     <section class="content-section">
-      <!-- Loading State -->
+
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
         <p>Loading medication updates...</p>
       </div>
 
-      <!-- Error State -->
+
       <div v-else-if="error" class="error-state">
         <p>{{ error }}</p>
         <button @click="fetchMedicationData" class="retry-button">Retry</button>
       </div>
 
-      <!-- Content State -->
+
       <div v-else class="medication-timeline">
         <div v-for="dayData in medicationUpdates" :key="dayData.date" class="day-card">
           <div class="date-header" :class="{ 'today': isToday(dayData.date) }">
@@ -217,7 +206,7 @@ function isToday(dateString) {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Reset and base styles */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -242,7 +231,7 @@ body, html {
   color: #333;
 }
 
-/* Navbar Styles */
+
 .navbar {
   background-color: white;
   display: flex;
@@ -284,7 +273,7 @@ body, html {
   color: #1f2937;
 }
 
-/* Header Section Styles */
+
 .header-section {
   padding: 30px;
   text-align: center;
@@ -302,7 +291,7 @@ h1 {
   font-size: 1.1rem;
 }
 
-/* Content Section Styles */
+
 .content-section {
   flex: 1;
   padding: 0 30px 30px;
@@ -342,7 +331,7 @@ h1 {
   cursor: pointer;
 }
 
-/* Medication Timeline Styles */
+
 .medication-timeline {
   display: flex;
   flex-direction: column;
@@ -467,7 +456,7 @@ h1 {
   font-weight: bold;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 768px) {
   .navbar {
     padding: 10px 15px;

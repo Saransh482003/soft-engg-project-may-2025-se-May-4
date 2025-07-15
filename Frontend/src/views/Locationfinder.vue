@@ -119,10 +119,10 @@ function goBack() {
 
 <template>
   <div class="location-tracking-container">
-    <!-- Navigation Bar -->
+
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHARVAN</span>
+        <span>🌿 SHRAVAN</span>
       </div>
       <div class="nav-right">
         <button class="back-button" @click="goBack">
@@ -131,15 +131,15 @@ function goBack() {
       </div>
     </nav>
 
-    <!-- Header Section -->
+
     <section class="header-section">
       <h1>Location Tracking</h1>
       <p class="subtitle">Monitor location for {{ patientName }}</p>
     </section>
 
-    <!-- Main Content -->
+
     <div class="content-container">
-      <!-- Current Location Section -->
+
       <section class="current-location-section">
         <div class="card location-card">
           <div class="card-header">
@@ -182,7 +182,6 @@ function goBack() {
         </div>
       </section>
 
-      <!-- SOS Alerts History -->
       <section class="sos-history-section">
         <div class="card sos-card">
           <div class="card-header">
@@ -223,7 +222,7 @@ function goBack() {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Base Styles */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -240,7 +239,7 @@ function goBack() {
   color: #333;
 }
 
-/* Navbar Styles */
+
 .navbar {
   background-color: white;
   display: flex;
@@ -281,7 +280,7 @@ function goBack() {
   color: #1f2937;
 }
 
-/* Header Section */
+
 .header-section {
   padding: 30px;
   text-align: center;
@@ -299,7 +298,7 @@ h1 {
   font-size: 1.1rem;
 }
 
-/* Content Container */
+
 .content-container {
   padding: 0 30px 30px;
   display: flex;
@@ -307,7 +306,7 @@ h1 {
   gap: 30px;
 }
 
-/* Card Styles */
+
 .card {
   background-color: white;
   border-radius: 16px;
@@ -339,7 +338,7 @@ h1 {
   padding: 20px;
 }
 
-/* Location Card Styles */
+
 .location-details {
   margin-bottom: 20px;
 }
@@ -413,7 +412,7 @@ h1 {
   color: #1f2937;
 }
 
-/* SOS Alerts Styles */
+
 .sos-list {
   display: flex;
   flex-direction: column;
@@ -482,7 +481,7 @@ h1 {
   padding: 20px 0;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 768px) {
   .navbar, .header-section {
     padding: 15px;

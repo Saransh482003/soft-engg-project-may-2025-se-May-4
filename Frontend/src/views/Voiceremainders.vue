@@ -7,12 +7,12 @@ const title = ref('')
 const selectedFile = ref(null)
 const voiceReminders = ref([])
 
-// Handle file input
+
 function handleFileUpload(event) {
   selectedFile.value = event.target.files[0]
 }
 
-// Upload reminder to backend
+
 async function uploadReminder() {
   if (!selectedFile.value) return
 
@@ -37,7 +37,7 @@ async function uploadReminder() {
   }
 }
 
-// Fetch existing voice reminders
+
 async function fetchVoiceReminders() {
   try {
     const res = await fetch('/api/voice-reminders', {
@@ -54,14 +54,14 @@ onMounted(fetchVoiceReminders)
 
 <template>
   <div class="voice-reminder-page">
-    <!-- Navbar -->
+
     <nav class="navbar navbar-dark bg-primary px-4">
       <RouterLink class="home-btn" to="/userdashboard">🏠 Home</RouterLink>
       <h2 class="heading">🔊 Voice Reminders</h2>
     </nav>
 
     <div class="container py-4">
-      <!-- Upload New Voice Reminder -->
+
       <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white">🎙️ Add New Voice Reminder</div>
         <div class="card-body">
@@ -79,7 +79,7 @@ onMounted(fetchVoiceReminders)
         </div>
       </div>
 
-      <!-- Existing Voice Reminders -->
+
       <div class="card shadow-sm">
         <div class="card-header bg-secondary text-white">📁 Saved Voice Reminders</div>
         <ul class="list-group list-group-flush" v-if="voiceReminders.length > 0">

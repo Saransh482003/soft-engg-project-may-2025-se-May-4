@@ -167,10 +167,10 @@ function truncateText(text, length = 120) {
 
 <template>
   <div class="health-tips-container">
-    <!-- Navigation Bar -->
+
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHARVAN</span>
+        <span>🌿 SHRAVAN</span>
       </div>
       <div class="nav-right">
         <button class="back-button" @click="goBack">
@@ -179,22 +179,22 @@ function truncateText(text, length = 120) {
       </div>
     </nav>
 
-    <!-- Header Section -->
+
     <section class="header-section">
       <h1>Health Tips & Resources</h1>
       <p class="subtitle">Share health information with the community</p>
     </section>
 
-    <!-- Content Section -->
+
     <div class="content-container">
-      <!-- Action Bar -->
+
       <div class="action-bar">
         <button class="new-post-button" @click="openModal">
           ✏️ Create New Health Tip
         </button>
       </div>
 
-      <!-- Blog Posts Grid -->
+
       <div class="blog-grid">
         <div v-for="post in healthTips" :key="post.id" class="blog-card">
           <div class="blog-image">
@@ -214,7 +214,7 @@ function truncateText(text, length = 120) {
       </div>
     </div>
 
-    <!-- New Post Modal -->
+
     <div class="modal-overlay" v-if="showModal" @click.self="closeModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -301,7 +301,7 @@ function truncateText(text, length = 120) {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Base Styles */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -318,7 +318,7 @@ function truncateText(text, length = 120) {
   color: #333;
 }
 
-/* Navbar Styles */
+
 .navbar {
   background-color: white;
   display: flex;
@@ -359,7 +359,7 @@ function truncateText(text, length = 120) {
   color: #1f2937;
 }
 
-/* Header Section */
+
 .header-section {
   padding: 30px;
   text-align: center;
@@ -377,13 +377,13 @@ h1 {
   font-size: 1.1rem;
 }
 
-/* Content Container */
+
 .content-container {
   flex: 1;
   padding: 0 30px 30px;
 }
 
-/* Action Bar */
+
 .action-bar {
   display: flex;
   justify-content: flex-end;
@@ -406,7 +406,7 @@ h1 {
   transform: translateY(-2px);
 }
 
-/* Blog Grid */
+
 .blog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -489,7 +489,7 @@ h1 {
   color: white;
 }
 
-/* Modal Styles */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -619,7 +619,7 @@ h1 {
   cursor: not-allowed;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 768px) {
   .header-section {
     padding: 20px 15px;

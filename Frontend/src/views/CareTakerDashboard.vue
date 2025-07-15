@@ -9,7 +9,7 @@ const username = ref('Caretaker');
 const searchQuery = ref('');
 
 onMounted(() => {
-  // Get username from auth store if available
+
   if (auth_store.userDetails) {
     try {
       const userDetails = JSON.parse(auth_store.userDetails);
@@ -30,17 +30,17 @@ function logout() {
 }
 
 function handleSearch() {
-  // Implement search functionality
+
   console.log('Searching for:', searchQuery.value);
 }
 </script>
 
 <template>
   <div class="dashboard-container">
-    <!-- Section 1: Navigation Bar -->
+
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHARVAN</span>
+        <span>🌿 SHRAVAN</span>
       </div>
       <div class="nav-right">
         <div class="search-container">
@@ -59,23 +59,23 @@ function handleSearch() {
       </div>
     </nav>
 
-    <!-- Section 2: Welcome Section -->
+
     <section class="welcome-section">
       <div class="welcome-content">
         <h1>Welcome, {{ username }} 👋</h1>
         <p class="subtitle">Your dedication to care makes a difference every day</p>
       </div>
       <div class="welcome-image">
-        <!-- Use a placeholder image if you don't have one -->
+
         <img src="https://placehold.co/400x300/e0f7fa/1f2937?text=Caretaker" alt="Caretaker" class="care-image">
       </div>
     </section>
 
-    <!-- Section 3: Feature Cards -->
+
     <section class="features-section">
       <h2>Care Services</h2>
       <div class="card-container">
-        <div class="feature-card" @click="goToFeature('/missed-alerts')">
+        <div class="feature-card" @click="goToFeature('/missedmedicinealert')">
           <div class="card-icon">🚨</div>
           <h3>Missed Medicine Alerts</h3>
           <p>Monitor if your loved one has missed any medications</p>
@@ -87,7 +87,7 @@ function handleSearch() {
           <p>Check vital signs and daily health status</p>
         </div>
         
-        <div class="feature-card" @click="goToFeature('/live-location')">
+        <div class="feature-card" @click="goToFeature('/locationfinder')">
           <div class="card-icon">📍</div>
           <h3>Location Tracking</h3>
           <p>Find your loved one's location in case of emergency</p>
@@ -98,7 +98,7 @@ function handleSearch() {
 </template>
 
 <style scoped>
-/* These styles need to be global to affect html and body */
+
 :global(html), :global(body) {
   margin: 0;
   padding: 0;
@@ -132,7 +132,7 @@ function handleSearch() {
   bottom: 0;
 }
 
-/* Section 1: Navbar Styles */
+
 .navbar {
   background-color: white;
   display: flex;
@@ -153,11 +153,11 @@ function handleSearch() {
   color: #3b82f6;
 }
 
-/* New container for right-aligned elements */
+
 .nav-right {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Push to the right */
+  justify-content: flex-end; 
 }
 
 .search-container {
@@ -205,7 +205,7 @@ function handleSearch() {
   color: #1f2937;
 }
 
-/* Section 2: Welcome Section Styles */
+
 .welcome-section {
   display: flex;
   margin: 30px 30px;
@@ -252,7 +252,7 @@ h1 {
   margin-bottom: 0;
 }
 
-/* Section 3: Features Section Styles */
+
 .features-section {
   padding: 0 30px 30px 30px;
 }
@@ -307,7 +307,7 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;

@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
-// Mock list of yoga video data (replace with real backend data later)
+// Mock list of yoga video data (we will replace with real backend data later)
 const yogaVideos = ref([
   {
     title: 'Gentle Yoga for Seniors – 20 Minutes',

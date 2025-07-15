@@ -91,6 +91,11 @@ const router = createRouter({
       component: () => import('../views/Voiceremainders.vue')
     },
     {
+      path: '/daily-health',
+      name: 'daily-health',
+      component: () => import('../views/DailyHealth.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting

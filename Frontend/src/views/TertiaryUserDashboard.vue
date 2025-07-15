@@ -8,7 +8,6 @@ const auth_store = auth();
 const username = ref('Health Worker');
 
 onMounted(() => {
-  // Get username from auth store if available
   if (auth_store.userDetails) {
     try {
       const userDetails = JSON.parse(auth_store.userDetails);
@@ -31,17 +30,17 @@ function logout() {
 
 <template>
   <div class="dashboard-container">
-    <!-- Section 1: Navigation Bar -->
+
     <nav class="navbar">
       <div class="logo">
-        <span>🌿 SHARVAN</span>
+        <span>🌿 SHRAVAN</span>
       </div>
       <div class="nav-right">
         <button class="logout-button" @click="logout">Logout</button>
       </div>
     </nav>
 
-    <!-- Section 2: Welcome Section -->
+
     <section class="welcome-section">
       <div class="welcome-content">
         <h1>Welcome, {{ username }} 👋</h1>
@@ -53,11 +52,11 @@ function logout() {
       </div>
     </section>
 
-    <!-- Section 3: Feature Cards - Using the existing cards -->
+
     <section class="features-section">
       <h2>Available Services</h2>
       <div class="card-container">
-        <div class="feature-card" @click="goToFeature('/send-messages')">
+        <div class="feature-card" @click="goToFeature('/healthtips')">
           <div class="card-icon">📢</div>
           <h3>Share Health Tips</h3>
           <p>Send health advice and information to community members</p>
@@ -76,7 +75,7 @@ function logout() {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Reset and base styles */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -103,7 +102,6 @@ body, html {
   margin: 0;
 }
 
-/* Section 1: Navbar Styles */
 .navbar {
   background-color: white;
   display: flex;
@@ -146,7 +144,6 @@ body, html {
   color: #1f2937;
 }
 
-/* Section 2: Welcome Section Styles */
 .welcome-section {
   display: flex;
   margin: 30px 30px;
@@ -199,7 +196,6 @@ h1 {
   line-height: 1.5;
 }
 
-/* Section 3: Features Section Styles */
 .features-section {
   padding: 0 30px 30px;
 }
@@ -254,7 +250,6 @@ h1 {
   font-size: 0.95rem;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 768px) {
   .navbar {
     padding: 15px;

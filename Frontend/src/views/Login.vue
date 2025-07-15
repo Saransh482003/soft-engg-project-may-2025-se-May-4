@@ -42,7 +42,7 @@ async function onSubmit() {
         <img src="../assets/caretaker.png" alt="Expert Caretaker" class="caretaker-image">
       </div>
       <div class="card-right">
-        <h1 class="text-center">🔐 Login to SHARVAN</h1>
+        <h1 class="text-center">🔐 Login to SHRAVAN</h1>
         <p class="text-center subtitle">Your wellness, our priority</p>
         <form @submit.prevent="onSubmit">
           <div class="mb-3">
@@ -70,7 +70,7 @@ async function onSubmit() {
 </template>
 
 <style scoped>
-/* Import Google Fonts for improved typography */
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .login-container {
@@ -274,7 +274,7 @@ h1 {
   font-weight: 400;
 }
 
-/* Responsive adjustments for smaller screens */
+
 @media (max-width: 768px) {
   .login-card {
     width: 90%;
