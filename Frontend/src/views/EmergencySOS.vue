@@ -8,7 +8,7 @@ async function triggerSOS() {
   statusMessage.value = 'Sending alert...';
 
   try {
-    // Get location if supported
+
     const location = await getLocation();
 
     const payload = {
@@ -16,7 +16,7 @@ async function triggerSOS() {
       location: location ? location : 'Location not available'
     };
 
-    // Replace this with your actual backend API
+
     const response = await axios.post('/api/send-sos', payload);
 
     if (response.data.success) {
@@ -41,7 +41,7 @@ function getLocation() {
         const coords = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
         resolve(coords);
       },
-      () => resolve(null), // If user denies permission
+      () => resolve(null), 
       { timeout: 10000 }
     );
   });

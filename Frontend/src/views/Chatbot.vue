@@ -4,7 +4,7 @@
       <RouterLink to="/userdashboard" class="back-button">
         <span class="material-icons">arrow_back</span>
       </RouterLink>
-      <h1>SHARVAN Voice Assistant</h1>
+      <h1>SHRAVAN Voice Assistant</h1>
       <div class="theme-toggle">
         <button @click="toggleDarkMode" class="theme-btn">
           <span class="material-icons">{{ darkMode ? 'light_mode' : 'dark_mode' }}</span>
@@ -17,7 +17,7 @@
         <div class="chat-info">
            <img src="../assets/Sharvan_logo.jpeg" alt="Avatar" class="chat-avatar" />
           <div>
-            <h2>SHARVAN</h2>
+            <h2>SHRAVAN</h2>
             <p>Your health assistant</p>
           </div>
         </div>
@@ -90,7 +90,7 @@ const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 let recognition: any = null;
 
-// Check for voice support
+
 onMounted(() => {
   // Initialize with a welcome message
   messages.value.push({ 
@@ -99,6 +99,14 @@ onMounted(() => {
     time: getCurrentTime()
   });
 
+
+
+  scrollToBottom();
+  
+
+  document.body.classList.toggle('dark-mode', darkMode.value);
+  
+
   // Scroll to bottom of messages
   scrollToBottom();
   
@@ -106,6 +114,7 @@ onMounted(() => {
   document.body.classList.toggle('dark-mode', darkMode.value);
   
   // Initialize speech recognition
+
   const SpeechRecognitionClass =
     (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
@@ -136,20 +145,28 @@ onMounted(() => {
   }
 });
 
+
+
 // Watch for new messages and scroll to bottom
+
 watch(messages, () => {
   nextTick(() => {
     scrollToBottom();
   });
 });
 
+
 // Get current time for message timestamp
+
 const getCurrentTime = () => {
   const now = new Date();
   return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
+
+
 // Send message to backend
+
 const sendMessage = async () => {
   if (!userInput.value.trim() || isProcessing.value) return;
   
@@ -157,7 +174,9 @@ const sendMessage = async () => {
   userInput.value = '';
   isProcessing.value = true;
   
+
   // Add user message
+
   messages.value.push({ 
     text: messageText, 
     sender: 'user',
@@ -165,6 +184,11 @@ const sendMessage = async () => {
   });
 
   try {
+
+
+    setTimeout(() => {
+
+
     // In a real app, you'd connect to your backend
     // For now, simulate a response with a delay
     setTimeout(() => {
@@ -174,6 +198,7 @@ const sendMessage = async () => {
       // });
       
       // Simulated response based on common questions
+
       let botResponse = "I'm sorry, I don't understand that yet. My capabilities are still developing.";
       
       if (messageText.toLowerCase().includes('medicine')) {
@@ -204,7 +229,9 @@ const sendMessage = async () => {
   }
 };
 
+
 // Trigger voice input
+
 const startListening = () => {
   if (recognition && !isListening.value) {
     recognition.start();
@@ -213,14 +240,20 @@ const startListening = () => {
   }
 };
 
+
 // Scroll to the bottom of the chat
+
 const scrollToBottom = () => {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
 
+
+
+
 // Toggle dark mode
+
 const toggleDarkMode = () => {
   darkMode.value = !darkMode.value;
   localStorage.setItem('darkMode', darkMode.value.toString());
@@ -255,6 +288,28 @@ const toggleDarkMode = () => {
 .back-button {
   display: flex;
   align-items: center;
+
+
+.chatbot-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--primary-color, #4e54c8);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chatbot-header h1 {
+  flex: 1;
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+
   justify-content: center;
   width: 36px;
   height: 36px;
@@ -280,12 +335,20 @@ const toggleDarkMode = () => {
   color: white;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s;
+
 }
 
 .theme-btn:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
+
+}
+
+.theme-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 
 .chatbot-container {
   display: flex;
@@ -304,6 +367,34 @@ const toggleDarkMode = () => {
   padding: 1rem;
   border-bottom: 1px solid var(--border-color, #eaeaea);
   background-color: var(--card-bg-accent, #f9f9f9);
+}
+
+.chat-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-info .material-icons {
+  font-size: 2rem;
+  color: var(--primary-color, #4e54c8);
+  background-color: var(--icon-bg, rgba(78, 84, 200, 0.1));
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.chat-info h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-color, #333);
+}
+
+.chat-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted, #666);
+}
+
 }
 
 .chat-info {
@@ -387,6 +478,75 @@ const toggleDarkMode = () => {
 .message-content {
   display: flex;
   flex-direction: column;
+
+}
+
+.message-content p {
+  margin: 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.7;
+  align-self: flex-end;
+}
+
+.chat-input {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color, #eaeaea);
+  background-color: var(--card-bg, white);
+}
+
+.input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--input-bg, #f0f2f5);
+  border-radius: 24px;
+  padding: 0.5rem 0.75rem;
+}
+
+.input-form input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.5rem;
+  font-size: 1rem;
+  color: var(--text-color, #333);
+}
+
+.input-form input::placeholder {
+  color: var(--text-muted, #888);
+}
+
+.voice-btn, .send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--btn-bg, rgba(78, 84, 200, 0.1));
+  color: var(--primary-color, #4e54c8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.voice-btn:hover, .send-btn:hover {
+  background-color: var(--btn-hover-bg, rgba(78, 84, 200, 0.2));
+}
+
+.voice-btn:disabled, .send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 }
 
 .message-content p {
@@ -471,6 +631,7 @@ const toggleDarkMode = () => {
   color: white;
 }
 
+
 /* Dark mode styles */
 :root {
   --bg-color: #f5f5f5;
@@ -519,6 +680,8 @@ html, body {
   width: 100vw !important;
   overflow-x: hidden;
 }
+
+
 
 /* Make sure Material Icons are included in your index.html or imported elsewhere */
 </style>

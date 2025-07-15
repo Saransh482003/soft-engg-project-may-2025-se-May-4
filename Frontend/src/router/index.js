@@ -66,6 +66,11 @@ const router = createRouter({
       component: () => import('../views/missedmedicinealerts.vue'),
     },
     {
+      path: '/locationfinder',
+      name: 'locationfinder',
+      component: () => import('../views/Locationfinder.vue'),
+    },
+    {
       path: '/addmedicinealert',
       name: 'addmedicinealert',
       component: () => import('../views/Addmedicine.vue')
@@ -76,9 +81,19 @@ const router = createRouter({
       component: () => import('../views/Deletemedicine.vue')
     },
     {
+      path: '/healthtips',
+      name: 'healthtips',
+      component: () => import('../views/Sharehealthtips.vue'),
+    },
+    {
       path: '/voice-reminders',
       name: 'voice-remainders',
       component: () => import('../views/Voiceremainders.vue')
+    },
+    {
+      path: '/daily-health',
+      name: 'daily-health',
+      component: () => import('../views/DailyHealth.vue')
     },
     {
       path: '/about',

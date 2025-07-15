@@ -2,11 +2,11 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
-// State
+
 const reminders = ref([])
 const token = localStorage.getItem('token')
 
-// Fetch all reminders
+
 async function fetchReminders() {
   try {
     const res = await fetch('/api/reminders', {
@@ -20,7 +20,7 @@ async function fetchReminders() {
   }
 }
 
-// Delete reminder
+
 async function deleteReminder(id) {
   try {
     await fetch(`/api/reminders/${id}`, {
@@ -40,13 +40,12 @@ onMounted(fetchReminders)
 
 <template>
   <div class="medicine-reminder-page container py-4">
-    <!-- Top Bar -->
+
     <div class="navbar navbar-dark bg-danger px-4 d-flex justify-content-between align-items-center mb-4">
       <RouterLink class="home-btn" to="/userdashboard">🏠 Home</RouterLink>
       <h2 class="heading text-white">🗑️ Delete Medicine Reminders</h2>
     </div>
 
-    <!-- Reminder List -->
     <div v-if="reminders.length > 0">
       <div
         class="card shadow-sm mb-3"

@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 
 <template>
   <main class="home-container">
-    <h1 class="welcome-text">👋 WELCOME TO SHARVAN</h1>
+    <h1 class="welcome-text">👋 WELCOME TO SHRAVAN</h1>
     <p class="subtitle">A Helping Hand for Senior Citizens</p>
     <div class="button-container">
       <RouterLink class="login-button" to="/userlogin">🔐 LOGIN / REGISTER</RouterLink>
