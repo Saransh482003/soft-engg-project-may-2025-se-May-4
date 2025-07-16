@@ -1,0 +1,144 @@
+tags:
+  - User
+summary: Update an existing user by ID (full or partial replacement)
+description: Updates an existing user's details. All fields in the request body will attempt to update the corresponding user attributes. If a field is omitted, its current value will be retained.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: user_id
+    type: integer
+    required: true
+    description: "ID of the user to update."
+    example: 1
+  - in: body
+    name: body
+    description: User object with updated fields.
+    required: true
+    schema:
+      type: object
+      properties:
+        user_name:
+          type: string
+          description: "Updated username for the user."
+          example: "janedoe"
+        password:
+          type: string
+          description: "Updated password (will be hashed)."
+          format: "password"
+          example: "newsecurepassword456"
+        email:
+          type: string
+          description: "Updated email address of the user."
+          format: "email"
+          example: "jane.doe@example.com"
+        mobile_number:
+          type: string
+          description: "Updated mobile number of the user."
+          example: "0987654321"
+        gender:
+          type: string
+          description: "Updated gender of the user."
+          enum: ["Male", "Female", "Other", "Prefer not to say"]
+          example: "Female"
+        dob:
+          type: string
+          description: "Updated date of birth in YYYY-MM-DD format (can be null)."
+          format: "date"
+          example: "1992-05-20"
+          x-nullable: true
+        address:
+          type: string
+          description: "Updated residential address of the user."
+          example: "456 Oak Ave, Othertown, USA"
+responses:
+  200:
+    description: User updated successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User updated successfully"
+        status:
+          type: string
+          example: "success"
+        user:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: "Unique identifier for the user."
+              example: 1
+            user_name:
+              type: string
+              description: "Username of the user."
+              example: "janedoe"
+            email:
+              type: string
+              description: "Email address of the user."
+              format: "email"
+              example: "jane.doe@example.com"
+            mobile_number:
+              type: string
+              description: "Mobile number of the user."
+              example: "0987654321"
+            gender:
+              type: string
+              description: "Gender of the user."
+              example: "Female"
+            dob:
+              type: string
+              description: "Date of birth in YYYY-MM-DD format."
+              format: "date"
+              example: "1992-05-20"
+            address:
+              type: string
+              description: "User's residential address."
+              example: "456 Oak Ave, Othertown, USA"
+  400:
+    description: Bad Request - Invalid date format.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid date format. Use YYYY-MM-DD"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: User not found.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found"
+        status:
+          type: string
+          example: "fail"
+  409:
+    description: Conflict - Email, mobile number, or username already exists.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Email already exists"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error updating user: Some internal server issue"
+        status:
+          type: string
+          example: "fail"

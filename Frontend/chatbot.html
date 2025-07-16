@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior Citizen Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            height: 80vh; /* Adjust height as needed */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #eee;
+            scroll-behavior: smooth; /* Smooth scrolling for new messages */
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 75%;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .message.user .message-content {
+            background-color: #DCF8C6; /* Light green for user */
+            color: #333;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background-color: #E0E0E0; /* Light grey for bot */
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input-area textarea {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            resize: none; /* Disable manual resize */
+            outline: none;
+            margin-right: 10px;
+            transition: border-color 0.2s;
+            max-height: 80px; /* Limit height of textarea */
+            overflow-y: auto; /* Enable scroll if text overflows */
+        }
+
+        .chat-input-area textarea:focus {
+            border-color: #4CAF50;
+        }
+
+        .chat-input-area button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            outline: none;
+        }
+
+        .chat-input-area button:hover {
+            background-color: #45a049;
+        }
+
+        .chat-input-area button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Senior Citizen Chatbot
+        </div>
+        <div class="chat-box" id="chat-box">
+            <div class="message bot">
+                <div class="message-content">Hello! I'm here to help. How can I assist you today?</div>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <textarea id="user-input" placeholder="Type your message..." rows="1"></textarea>
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function addMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            chatBox.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            addMessage('user', message);
+            userInput.value = '';
+            sendButton.disabled = true;
+
+            try {
+                const response = await fetch('/chatbot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                addMessage('bot', data.response);
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                addMessage('bot', 'Oops! Something went wrong. Please try again.');
+            } finally {
+                sendButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            scrollToBottom();
+            userInput.focus();
+        });
+    </script>
+    
+</body>
+</html>

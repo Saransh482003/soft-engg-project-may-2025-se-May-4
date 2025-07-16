@@ -1,0 +1,77 @@
+tags:
+  - User
+summary: Get a single user by ID
+description: Retrieves the details of a specific user using their unique user ID.
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: user_id
+    type: integer
+    required: true
+    description: "ID of the user to retrieve."
+    example: 1
+responses:
+  200:
+    description: User details.
+    schema:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: "Unique identifier for the user."
+              example: 1
+            user_name:
+              type: string
+              description: "Username of the user."
+              example: "johndoe"
+            email:
+              type: string
+              description: "Email address of the user."
+              format: "email"
+              example: "john.doe@example.com"
+            mobile_number:
+              type: string
+              description: "Mobile number of the user."
+              example: "1234567890"
+            gender:
+              type: string
+              description: "Gender of the user."
+              example: "Male"
+            dob:
+              type: string
+              description: "Date of birth in YYYY-MM-DD format."
+              format: "date"
+              example: "1990-01-15"
+            address:
+              type: string
+              description: "User's residential address."
+              example: "123 Main St, Anytown, USA"
+        status:
+          type: string
+          example: "success"
+  404:
+    description: User not found.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error fetching user: Some internal server issue"
+        status:
+          type: string
+          example: "fail"

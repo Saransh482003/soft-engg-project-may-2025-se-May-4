@@ -1,0 +1,144 @@
+tags:
+  - User
+summary: Partially update an existing user by ID
+description: Updates only the provided fields of an existing user. Other fields remain unchanged.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: user_id
+    type: integer
+    required: true
+    description: "ID of the user to update."
+    example: 1
+  - in: body
+    name: body
+    description: User object with fields to update (only include fields you want to change).
+    required: true
+    schema:
+      type: object
+      properties:
+        user_name:
+          type: string
+          description: "New username for the user."
+          example: "janedoe_new"
+        password:
+          type: string
+          description: "New password (will be hashed)."
+          format: "password"
+          example: "anothersecurepassword789"
+        email:
+          type: string
+          description: "New email address of the user."
+          format: "email"
+          example: "jane.new@example.com"
+        mobile_number:
+          type: string
+          description: "New mobile number of the user."
+          example: "9988776655"
+        gender:
+          type: string
+          description: "New gender of the user."
+          enum: ["Male", "Female", "Other", "Prefer not to say"]
+          example: "Female"
+        dob:
+          type: string
+          description: "New date of birth in YYYY-MM-DD format (can be null)."
+          format: "date"
+          example: "1992-05-20"
+          x-nullable: true
+        address:
+          type: string
+          description: "New residential address of the user."
+          example: "789 Pine St, New City, USA"
+responses:
+  200:
+    description: User updated successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User updated successfully"
+        status:
+          type: string
+          example: "success"
+        user:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: "Unique identifier for the user."
+              example: 1
+            user_name:
+              type: string
+              description: "Username of the user."
+              example: "janedoe_new"
+            email:
+              type: string
+              description: "Email address of the user."
+              format: "email"
+              example: "jane.new@example.com"
+            mobile_number:
+              type: string
+              description: "Mobile number of the user."
+              example: "9988776655"
+            gender:
+              type: string
+              description: "Gender of the user."
+              example: "Female"
+            dob:
+              type: string
+              description: "Date of birth in YYYY-MM-DD format."
+              format: "date"
+              example: "1992-05-20"
+            address:
+              type: string
+              description: "User's residential address."
+              example: "789 Pine St, New City, USA"
+  400:
+    description: Bad Request - Invalid date format.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid date format. Use YYYY-MM-DD"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: User not found.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found"
+        status:
+          type: string
+          example: "fail"
+  409:
+    description: Conflict - Email, mobile number, or username already exists.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "mobile_number already exists"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error updating user: Some internal server issue"
+        status:
+          type: string
+          example: "fail"

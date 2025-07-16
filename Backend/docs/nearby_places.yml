@@ -1,0 +1,132 @@
+tags:
+  - Nearby Places
+summary: Find and sync nearby places (Hospitals, Clinics, Pharmacies)
+description: This endpoint searches for nearby hospitals, clinics, or pharmacies using Google Places API and syncs the results with the local database. It returns a list of places, either fetched from the database if already synced, or newly fetched from Google and stored.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: Location coordinates, search keyword, and optional radius.
+    required: true
+    schema:
+      type: object
+      required:
+        - lat
+        - lon
+        - keyword
+      properties:
+        lat:
+          type: number
+          format: float
+          description: Latitude of the center point for the search.
+          example: 34.0522
+        lon:
+          type: number
+          format: float
+          description: Longitude of the center point for the search.
+          example: -118.2437
+        keyword:
+          type: string
+          description: The type of place to search for.
+          enum: ["hospital", "clinic", "pharmacy"]
+          example: "hospital"
+        radius:
+          type: integer
+          description: Search radius in meters. Defaults to 1000.
+          minimum: 1
+          maximum: 50000
+          default: 1000
+          example: 5000
+responses:
+  200:
+    description: Successfully found and synced nearby places. Returns an empty array if no places are found.
+    schema:
+      type: object
+      properties:
+        response:
+          type: array
+          items:
+            type: object
+            description: Details of a synced place (Hospital, Clinic, or Pharmacy).
+            properties:
+              place_id:
+                type: string
+                description: Unique Google Place ID.
+                example: "ChIJUQ_M-R3GwoAR4q3W4C3k0j0"
+              name:
+                type: string
+                description: Name of the place (hospital_name for hospitals).
+                example: "Good Health Hospital"
+              address:
+                type: string
+                description: Formatted address of the place.
+                example: "123 Main St, Anytown, USA"
+              latitudes:
+                type: number
+                format: float
+                description: Latitude of the place.
+                example: 34.0510
+              longitudes:
+                type: number
+                format: float
+                description: Longitude of the place.
+                example: -118.2450
+              website:
+                type: string
+                format: url
+                description: Website URL of the place.
+                example: "http://www.goodhealthhospital.com"
+              phone:
+                type: string
+                description: Phone number of the place.
+                example: "+12135551234"
+              rating:
+                type: number
+                format: float
+                description: Average user rating.
+                example: 4.5
+              num_rating:
+                type: integer
+                description: Total number of user ratings.
+                example: 120
+              type:
+                type: string
+                description: Type of the place (e.g., "hospital", "pharmacy").
+                example: "hospital"
+              # Additional fields specific to Pharmacy might appear here if it's a pharmacy
+              opening_hours_json:
+                type: string
+                description: JSON string of opening hours (for pharmacies).
+                example: '{"periods": [{"open": {"day": 0, "time": "0900"}, "close": {"day": 0, "time": "1700"}}]}'
+              business_status:
+                type: string
+                description: Operational status (e.g., "OPERATIONAL").
+                example: "OPERATIONAL"
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad Request - Missing required parameters or unsupported keyword.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Please provide lat, lon, and keyword."
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred during the search or syncing process.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An unexpected error occurred: Database error during sync"
+        status:
+          type: string
+          example: "fail"

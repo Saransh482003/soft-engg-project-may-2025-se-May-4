@@ -1,0 +1,57 @@
+tags:
+  - Chatbot
+summary: Send a message to the health-related chatbot
+description: This endpoint allows users to send a question to the AI-powered chatbot and receive a health-related response.
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: body
+    description: User input for the chatbot and conversation history.
+    required: true
+    schema:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          description: The user's question for the chatbot.
+          example: "What are some common symptoms of high blood pressure?"
+        history:
+          type: object
+          description: Optional conversation history to maintain context.
+          properties:
+            user:
+              type: string
+              example: "Hi there!"
+            assistant:
+              type: string
+              example: "Hello! How can I assist you today regarding your health?"
+responses:
+  200:
+    description: Successful response from the chatbot.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "High blood pressure, or hypertension, often doesn't have obvious symptoms, which is why it's sometimes called a 'silent killer.' However, in some cases, people might experience headaches, shortness of breath, or nosebleeds. It's important to have regular check-ups to monitor your blood pressure. 🩺"
+  400:
+    description: Bad Request - Invalid or empty question.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Please enter a valid question."
+  500:
+    description: Internal Server Error - Something went wrong with the chatbot response.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Error: Could not get a response from the chatbot."

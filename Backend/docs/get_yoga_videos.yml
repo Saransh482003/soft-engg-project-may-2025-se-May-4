@@ -1,0 +1,57 @@
+tags:
+  - Content
+summary: Get yoga videos
+description: Retrieves a list of available yoga videos, optionally filtered by difficulty level.
+produces:
+  - application/json
+parameters:
+  - in: query
+    name: difficulty
+    type: string
+    required: false
+    description: Filter videos by difficulty level.
+    enum: ["beginner", "intermediate", "advanced"]
+    example: "beginner"
+responses:
+  200:
+    description: Successfully retrieved list of yoga videos.
+    schema:
+      type: object
+      properties:
+        videos:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                description: Title of the yoga video.
+                example: "Gentle Morning Flow"
+              description:
+                type: string
+                description: A brief description of the video.
+                example: "A calming sequence to start your day."
+              video_url:
+                type: string
+                format: url
+                description: URL to the yoga video.
+                example: "https://example.com/yoga/gentle_flow.mp4"
+              difficulty:
+                type: string
+                description: Difficulty level of the video.
+                example: "beginner"
+              duration:
+                type: integer
+                description: Duration of the video in minutes.
+                example: 25
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error fetching yoga videos: Database error"
+        status:
+          type: string
+          example: "fail"

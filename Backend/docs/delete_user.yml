@@ -1,0 +1,47 @@
+tags:
+  - User
+summary: Delete a user by ID
+description: Deletes a user from the system using their unique user ID.
+produces:
+  - application/json
+parameters:
+  - in: path
+    name: user_id
+    type: integer
+    required: true
+    description: "ID of the user to delete."
+    example: 1
+responses:
+  200:
+    description: User deleted successfully.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User deleted successfully"
+        status:
+          type: string
+          example: "success"
+  404:
+    description: User not found.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error deleting user: Some internal server issue"
+        status:
+          type: string
+          example: "fail"

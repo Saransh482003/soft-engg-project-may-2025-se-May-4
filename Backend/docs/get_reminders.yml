@@ -1,0 +1,70 @@
+tags:
+  - Reminders
+summary: Get all medicine reminders for the logged-in user
+description: Retrieves a list of all medicine reminders associated with the currently authenticated user, ordered by time of day.
+produces:
+  - application/json
+responses:
+  200:
+    description: Successfully retrieved list of reminders.
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        reminders:
+          type: array
+          items:
+            type: object
+            properties:
+              reminder_id:
+                type: integer
+                description: Unique ID of the reminder.
+                example: 1
+              medicine_name:
+                type: string
+                description: Name of the medicine.
+                example: "Paracetamol"
+              dosage:
+                type: string
+                description: Dosage of the medicine.
+                example: "500mg"
+              time_of_day:
+                type: string
+                description: Time of day for the reminder (HH:MM).
+                example: "09:00"
+              frequency:
+                type: string
+                description: Frequency of the reminder.
+                example: "daily"
+              relation_to_meal:
+                type: string
+                description: Relation to meal (e.g., "after meal").
+                example: "after meal"
+              is_active:
+                type: boolean
+                description: Whether the reminder is active.
+                example: true
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error fetching reminders: Database error"
+        status:
+          type: string
+          example: "fail"

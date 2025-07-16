@@ -1,0 +1,95 @@
+tags:
+  - Analytics
+  - Authorization
+summary: Get symptom trends by pincode (Clinic User Access)
+description: Retrieves the most common symptom trends reported within a specific geographical pincode. This endpoint requires user authentication and is restricted to users with the 'clinic' role.
+produces:
+  - application/json
+parameters:
+  - in: query
+    name: pincode
+    type: string
+    required: true
+    description: The 6-digit pincode for which to retrieve symptom trends.
+    example: "110001"
+responses:
+  200:
+    description: Successfully retrieved symptom trends for the given pincode.
+    schema:
+      type: object
+      properties:
+        pincode:
+          type: string
+          description: The pincode for which the trends are reported.
+          example: "110001"
+        trends:
+          type: array
+          items:
+            type: object
+            properties:
+              symptom:
+                type: string
+                description: The symptom term.
+                example: "fever"
+              count:
+                type: integer
+                description: The number of times this symptom was logged in the pincode.
+                example: 150
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad Request - Pincode is required.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Pincode is required for analysis"
+        status:
+          type: string
+          example: "fail"
+  401:
+    description: Unauthorized - Authentication required.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Authentication required. Please log in."
+        status:
+          type: string
+          example: "fail"
+  403:
+    description: Forbidden - User does not have permission (not a clinic user).
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Forbidden. You do not have permission to access this resource."
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: Not Found - User not found (if session user_id is invalid).
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "User not found."
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal Server Error - An unexpected error occurred during trend analysis.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An unexpected error occurred: Database error"
+        status:
+          type: string
+          example: "fail"

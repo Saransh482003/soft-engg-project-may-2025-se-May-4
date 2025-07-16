@@ -1,0 +1,41 @@
+tags:
+  - Emergency Contacts
+summary: Get all emergency contacts
+description: Retrieves a list of all emergency contacts associated with the currently logged-in user.
+produces:
+  - application/json
+responses:
+  200:
+    description: Successfully retrieved list of emergency contacts.
+    schema:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            type: object
+            properties:
+              contact_id:
+                type: integer
+                description: Unique ID of the emergency contact.
+                example: 1
+              name:
+                type: string
+                description: Name of the emergency contact.
+                example: "John Doe"
+              number:
+                type: string
+                description: Phone number of the emergency contact.
+                example: "+15551234567"
+              relation:
+                type: string
+                description: Relationship of the contact to the user.
+                example: "Son"
+  401:
+    description: Unauthorized - User not authenticated.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not authenticated"

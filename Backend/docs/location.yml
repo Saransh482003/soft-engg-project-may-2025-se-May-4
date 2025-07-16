@@ -1,0 +1,41 @@
+tags:
+  - Location
+summary: Get current user's geographical location
+description: This endpoint attempts to retrieve the approximate geographical coordinates (latitude and longitude) of the client based on their IP address.
+produces:
+  - application/json
+responses:
+  200:
+    description: Successfully retrieved location.
+    schema:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: float
+              description: Latitude of the current location.
+              example: 34.0522
+            lng:
+              type: number
+              format: float
+              description: Longitude of the current location.
+              example: -118.2437
+  400:
+    description: Bad Request - Unable to retrieve location.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Unable to retrieve location."
+  500:
+    description: Internal Server Error - An unexpected error occurred while fetching location.
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          example: "Error: Failed to process location request."
