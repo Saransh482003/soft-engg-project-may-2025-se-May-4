@@ -4,8 +4,7 @@ from sqlalchemy import func
 from flasgger.utils import swag_from
 
 def routes_analytics(app, db):
-    # NOTE: These endpoints are now protected and only accessible to 'clinic' roles.
-    
+
     @app.route('/api/analytics/symptom-trends', methods=['GET'])
     @swag_from("docs/symptom_trends.yml")
     def get_symptom_trends():
