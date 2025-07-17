@@ -15,35 +15,43 @@ def routes_user(app, db):
     def create_user():
         try:
             data = request.get_json()
-            required_fields = ['user_name', 'password', 'email', 'mobile_number','gender', 'dob']
+            required_fields = ['user_name', 'password', 'email', 'mobile_number', 'gender', 'dob']
             for field in required_fields:
                 if not data.get(field):
                     return jsonify({'error': f'{field} is required', 'status': 'fail'}), 400
-            
-            # Check if user already exists
+
             existing_user = User.query.filter(
-                
+                (User.user_name == data['user_name']) |
                 (User.email == data['email']) |
-                (User.mobile_number == data['mobile_number']) 
+                (User.mobile_number == data['mobile_number'])
             ).first()
-            
+
             if existing_user:
-                return jsonify({'error': 'User with this username, email or mobile already exists', 'status': 'fail'}), 409
-            
-            # Create new user
+                return jsonify({'error': 'User with this user_name, email or mobile already exists', 'status': 'fail'}), 409
+
             new_user = User(
                 user_name=data['user_name'],
                 email=data['email'],
                 mobile_number=data['mobile_number'],
                 gender=data.get('gender'),
                 dob=datetime.strptime(data['dob'], "%Y-%m-%d").date() if data.get('dob') else None,
-                address=data.get('address') # Simply get the address string
+                address=data.get('address'),
+                pincode=data.get('pincode')
             )
             new_user.set_password(data['password'])
-            
+
+            role_name = data.get('role')
+            if role_name:
+                role_to_assign = Roles.query.filter_by(name=role_name).first()
+
+                if not role_to_assign:
+                    return jsonify({'error': f'Role "{role_name}" does not exist.', 'status': 'fail'}), 400
+
+                new_user.role = role_to_assign
+
             db.session.add(new_user)
             db.session.commit()
-            
+
             return jsonify({
                 'message': 'User created successfully',
                 'status': 'success',
@@ -54,15 +62,17 @@ def routes_user(app, db):
                     'mobile_number': new_user.mobile_number,
                     'gender': new_user.gender,
                     'dob': new_user.dob.isoformat() if new_user.dob else None,
-                    'address': new_user.address
+                    'address': new_user.address,
+                    'pincode': new_user.pincode,
+                    "role": new_user.role.name if new_user.role else None
                 }
             }), 201
-            
+
         except Exception as e:
             db.session.rollback()
             return jsonify({'error': f'Error creating user: {str(e)}', 'status': 'fail'}), 500
     
-    # READ - Get all users
+
     @app.route('/api/users', methods=['GET'])
     @swag_from("docs/get_all_users.yml")
     def get_all_users():
