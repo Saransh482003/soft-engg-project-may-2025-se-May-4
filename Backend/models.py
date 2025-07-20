@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from config import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# The Addresses table has been removed.
 
 class Roles(db.Model):
     __tablename__ = 'roles'
@@ -56,7 +55,7 @@ class Hospitals(db.Model):
 class Pharmacy(db.Model):
     __tablename__ = 'pharmacy'
     pharmacy_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    address = db.Column(db.Text, nullable=True) # Replaced Addresses relationship with a Text column
+    address = db.Column(db.Text, nullable=True) 
     place_id = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     latitude = db.Column(db.Numeric(10, 6), nullable=False)
@@ -109,7 +108,9 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     address = db.Column(db.Text, nullable=True) 
     pincode = db.Column(db.String(6), nullable=True)
-    roles = db.relationship('Roles', secondary='user_roles', backref='users')
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.role_id'), nullable=True)
+    role = db.relationship('Roles', backref='users')
+
     favorite_doctors = db.relationship('Doctors', secondary='user_doctor_favorites', backref='favorited_by_users')
     favorite_pharmacies = db.relationship('Pharmacy', secondary='user_pharmacy_favorites', backref='favorited_by_users')
 
