@@ -48,6 +48,30 @@ def function_routes(app, db, auth):
         except Exception as e:
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
+
+    @app.route('/api/doctor-finder', methods=['POST'])
+    @swag_from("docs/doctor_finder.yml")
+    def doctor_finder():
+        data = request.get_json()
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        type = data.get('type', 'hospital').lower()
+        radius = data.get('radius', 1000)
+
+        hospital_info = nearby_places.find_nearby_places(latitude, longitude, type, radius)
+        place_ids = [place.get('place_id') for place in hospital_info if place.get('place_id')]
+
+        place_details = []
+        for place_id in place_ids:
+            details = nearby_places.place_details(place_id)
+            if details:
+                place_details.append(details)
+        
+        websites = [place.get('website') for place in place_details if place.get('website')]
+        return jsonify({'response': place_details, 'status': 'success', 'websites': websites}), 200
+
+
+
     @app.route('/api/location', methods=['GET'])
     @swag_from("docs/location.yml")
     def location_route():
