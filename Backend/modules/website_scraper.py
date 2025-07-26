@@ -48,7 +48,7 @@ class WebsiteScraper:
         finally:
             driver.quit()
 
-    def find_doctor_page_links(self, homepage_url):
+    def find_doctor_page_links(self, homepage_url, doctor_type):
         response = requests.get(homepage_url)
         soup = BeautifulSoup(response.text, 'html.parser')
         
@@ -58,13 +58,13 @@ class WebsiteScraper:
         for link in links:
             text = link.text.lower()
             href = link['href']
-            if any(kw in text for kw in ['doctor', 'gyne', 'obstetrician', 'specialist', 'department', 'our team']):
+            if any(kw in text for kw in ['about-us','doctor', 'our doctors', doctor_type, 'specialist', 'department', 'our team']):
                 full_url = href if href.startswith('http') else homepage_url.rstrip('/') + '/' + href.lstrip('/')
                 doctor_pages.append(full_url)
-
-        return doctor_pages
     
-    def fetchDoctorInfomation(self, url, doctor_type):        
+        return doctor_pages
+
+    def fetch_doctor_information(self, url, doctor_type):
         html = self.get_rendered_html(url)
         with open("try.html", "w", encoding="utf-8") as file:
             file.write(html)
