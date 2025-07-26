@@ -38,4 +38,13 @@ routes_health(app, db)
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+        
+        if Roles.query.count() == 0:
+            default_roles = [
+                Roles(name='ngo', description='Non-Governmental Organization'),
+                Roles(name='caretaker', description='Doctor,Nurse etc'),
+                Roles(name='user', description='General User')
+            ]
+            db.session.bulk_save_objects(default_roles)
+            db.session.commit()
     app.run(debug=True)

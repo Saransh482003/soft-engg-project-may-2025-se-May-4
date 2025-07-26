@@ -318,6 +318,8 @@ def routes_user(app, db):
             session['user_id'] = user.user_id
             session['user_name'] = user.user_name
             
+            role = Roles.query.filter_by(role_id=user.role_id).first()
+
             return jsonify({
                 'message': 'Login successful',
                 'status': 'success',
@@ -328,7 +330,8 @@ def routes_user(app, db):
                     'mobile_number': user.mobile_number,
                     'gender': user.gender,
                     'dob': user.dob.isoformat() if user.dob else None,
-                    'address': user.address
+                    'address': user.address,
+                    'role': user.role.name if user.role else None
                 }
             }), 200
             

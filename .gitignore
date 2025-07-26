@@ -10,3 +10,4 @@ Backend/instance/
 Backend/instance/database.db
 Frontend/node_modules
 /Tests/Reports
+Backend/API_documentation.yml

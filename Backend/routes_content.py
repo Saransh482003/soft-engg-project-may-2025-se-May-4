@@ -21,3 +21,39 @@ def routes_content(app, db):
         } for v in videos]
 
         return jsonify({'videos': video_list}), 200
+    
+    @app.route('/api/yoga-videos', methods=['POST'])
+    @swag_from("docs/post_yoga_video.yml")
+    def create_yoga_video():
+        data = request.get_json()
+        video = YogaVideos(
+            title=data.get('title'),
+            description=data.get('description'),
+            video_url=data.get('video_url'),
+            difficulty=data.get('difficulty'),
+            duration_minutes=data.get('duration')
+        )
+        db.session.add(video)
+        db.session.commit()
+        return jsonify({'message': 'Yoga video created', 'id': video.id}), 201
+
+    @app.route('/api/yoga-videos/<int:video_id>', methods=['PUT'])
+    @swag_from("docs/put_yoga_video.yml")
+    def update_yoga_video(video_id):
+        data = request.get_json()
+        video = YogaVideos.query.get_or_404(video_id)
+        video.title = data.get('title', video.title)
+        video.description = data.get('description', video.description)
+        video.video_url = data.get('video_url', video.video_url)
+        video.difficulty = data.get('difficulty', video.difficulty)
+        video.duration_minutes = data.get('duration', video.duration_minutes)
+        db.session.commit()
+        return jsonify({'message': 'Yoga video updated'}), 200
+
+    @app.route('/api/yoga-videos/<int:video_id>', methods=['DELETE'])
+    @swag_from("docs/delete_yoga_video.yml")
+    def delete_yoga_video(video_id):
+        video = YogaVideos.query.get_or_404(video_id)
+        db.session.delete(video)
+        db.session.commit()
+        return jsonify({'message': 'Yoga video deleted'}), 200
