@@ -97,6 +97,7 @@ def function_routes(app, db, auth):
             type = data.get('type', 'hospital').lower()
             radius = data.get('radius', 1000)
             specialist = data.get('specialist', 'obstetrician')
+            limit = data.get('limit', 5)
 
             if latitude is None or longitude is None:
                 return jsonify({'error': 'Latitude and longitude are required fields.', 'status': 'fail'}), 400
@@ -113,9 +114,8 @@ def function_routes(app, db, auth):
                 if details:
                     place_details[place_id] = details
 
-            # print(list(place_details.items())[:5])
             scrape = {}
-            # for place_id, details in list(place_details.items())[2:3]:
+            # for place_id, details in list(place_details.items()):
             details = place_details.get("ChIJ7yWLbJFnUjoRVSMJqI5KyN4", {})
             website = details.get('website')
             name = details.get('name', '')
