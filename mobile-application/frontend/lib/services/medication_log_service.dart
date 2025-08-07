@@ -245,16 +245,14 @@ class MedicationLogService {
     String? logsJson = preferences.getString('medication_logs');
     print('🔍 medication_logs raw JSON: $logsJson');
     
-    if (logsJson != null) {
-      try {
-        List<dynamic> logsList = jsonDecode(logsJson);
-        print('🔍 Parsed logs count: ${logsList.length}');
-        print('🔍 Parsed logs: $logsList');
-      } catch (e) {
-        print('❌ Error parsing stored JSON: $e');
-      }
+    try {
+      List<dynamic> logsList = jsonDecode(logsJson);
+      print('🔍 Parsed logs count: ${logsList.length}');
+      print('🔍 Parsed logs: $logsList');
+    } catch (e) {
+      print('❌ Error parsing stored JSON: $e');
     }
-    
+      
     // Test getMedicationLogs method
     List<Map<String, dynamic>> retrievedLogs = await getMedicationLogs();
     print('🔍 getMedicationLogs() returned: ${retrievedLogs.length} logs');

@@ -61,7 +61,7 @@ class WebsiteScraper:
             if any(kw in text for kw in ['about-us','doctor', 'our doctors', doctor_type, 'specialist', 'department', 'our team']):
                 full_url = href if href.startswith('http') else homepage_url.rstrip('/') + '/' + href.lstrip('/')
                 doctor_pages.append(full_url)
-    
+        doctor_pages = sorted(list(set(doctor_pages)), key=lambda x: len(x))
         return doctor_pages
 
     def fetch_doctor_information(self, url, doctor_type):
@@ -108,6 +108,6 @@ class WebsiteScraper:
         )
         try:
             response = chat_completion.choices[0].message.content
-            return response
+            return json.loads(response)
         except Exception as e:
             return f"Error: {str(e)}"

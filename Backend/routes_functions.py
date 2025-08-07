@@ -10,6 +10,7 @@ import json
 
 
 
+
 def function_routes(app, db, auth):
     SYSTEM_PROMPT = """"
         You are a kind, patient, and helpful assistant for senior citizens.You are a compassionate, patient, and knowledgeable virtual medical consultant specializing in assisting elderly and disabled individuals. Your primary goal is to offer clear, respectful, and reassuring medical advice in simple terms that are easy to understand.
@@ -34,7 +35,18 @@ def function_routes(app, db, auth):
     nearby_places = NearbyPlaces(api_key=auth.get("GOOGLE_MAPS_API_KEY"))
     web_scraper = WebsiteScraper(api_key=auth.get("GROQ_API_KEY"))
 
+    def safe_float(val):
+        try:
+            return float(val)
+        except (TypeError, ValueError):
+            return 0.0
 
+    def safe_int(val):
+        try:
+            return int(val)
+        except (TypeError, ValueError):
+            return 0
+        
     @app.route('/api/chatbot', methods=['POST'])
     @swag_from("docs/chatbot.yml")
     def chatbot_route():
@@ -90,59 +102,96 @@ def function_routes(app, db, auth):
             400/500: Error in processing or scraping data.
         """
 
-        try:
-            data = request.get_json()
-            latitude = data.get('latitude')
-            longitude = data.get('longitude')
-            type = data.get('type', 'hospital').lower()
-            radius = data.get('radius', 1000)
-            specialist = data.get('specialist', 'obstetrician')
-            limit = data.get('limit', 5)
+        # try:
+        data = request.get_json()
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        type = data.get('type', 'hospital').lower()
+        radius = data.get('radius', 1000)
+        specialist = data.get('specialist', 'obstetrician')
+        limit = data.get('limit', 5)
 
-            if latitude is None or longitude is None:
-                return jsonify({'error': 'Latitude and longitude are required fields.', 'status': 'fail'}), 400
+        if latitude is None or longitude is None:
+            return jsonify({'error': 'Latitude and longitude are required fields.', 'status': 'fail'}), 400
 
-            hospital_info = nearby_places.find_nearby_places(latitude, longitude, type, radius)
-            if not hospital_info:
-                return jsonify({'response': {}, 'scraped_data': {}, 'status': 'no_places_found'}), 200
+        nearby_hospitals = nearby_places.find_nearby_places(latitude, longitude, type, radius)
+        if not nearby_hospitals:
+            return jsonify({'response': {}, 'scraped_data': {}, 'status': 'no_places_found'}), 200
 
-            place_ids = [place.get('place_id') for place in hospital_info if place.get('place_id')]
+        place_ids = [place.get('place_id') for place in nearby_hospitals if place.get('place_id')]
+        nearby_hospitals = sorted(
+            nearby_hospitals,
+            key=lambda x: safe_float(x.get("distance"))
+        )
 
-            place_details = {}
-            for place_id in place_ids:
-                details = nearby_places.place_details(place_id)
-                if details:
-                    place_details[place_id] = details
+        top_10_closest = nearby_hospitals[:10]
 
-            scrape = {}
-            # for place_id, details in list(place_details.items()):
-            details = place_details.get("ChIJ7yWLbJFnUjoRVSMJqI5KyN4", {})
+        top_10_sorted = sorted(
+            top_10_closest,
+            key=lambda x: (
+                -safe_int(x.get("user_ratings_total"))
+                -safe_float(x.get("rating")),
+            )
+        )
+        hospital_info = top_10_sorted[:5]
+
+        place_ids = [place.get('place_id') for place in hospital_info if place.get('place_id')]
+        place_details = {}
+        for place_id in place_ids:
+            details = nearby_places.place_details(place_id)
+            if details:
+                place_details[place_id] = details
+
+        scrape = {}
+        for place_id, details in list(place_details.items()):
             website = details.get('website')
             name = details.get('name', '')
             if not website:
                 scrape[place_id] = {"name": name, "doctor_info": [], "error": "No website found for this place."}
-                # continue
-            doctor_pages = web_scraper.find_doctor_page_links(website, specialist)
-            print(doctor_pages)
-            try:
-                doctor_pages = doctor_pages[0:1] 
-                doctor_info = []
+                continue
+            doctor_pages = web_scraper.find_doctor_page_links(website, specialist)[:1]
+            if doctor_pages != []:
+                page_scrape = []
                 for page in doctor_pages:
-                    page_scrape = web_scraper.fetch_doctor_information(page, specialist)
-                    if page_scrape:
-                        try:
-                            doctor_info.extend(json.loads(page_scrape))
-                        except json.JSONDecodeError as e:
-                            print(f"Error decoding JSON from {page}: {str(e)}")
-                            continue
-                scrape[place_id] = {"name": name, "doctor_info": doctor_info}
-            except Exception as e:
-                scrape[place_id] = {"name": name, "doctor_info": [], "error": f"Error scraping {website}: {str(e)}"}
+                    doctor_scrape = web_scraper.fetch_doctor_information(page, specialist)
+                    page_scrape.append(doctor_scrape)
+            scrape[place_id] = {"name": name, "doctor_scrape": page_scrape}
+        return scrape
+        #     place_details = {}
+        #     for place_id in place_ids:
+        #         details = nearby_places.place_details(place_id)
+        #         if details:
+        #             place_details[place_id] = details
 
-            return jsonify({'response': place_details, 'scraped_data': scrape, 'status': 'success'}), 200
+        #     scrape = {}
+        #     for place_id, details in list(place_details.items()):
+        #     details = place_details.get("ChIJ7yWLbJFnUjoRVSMJqI5KyN4", {})
+        #     website = details.get('website')
+        #     name = details.get('name', '')
+        #     if not website:
+        #         scrape[place_id] = {"name": name, "doctor_info": [], "error": "No website found for this place."}
+        #         # continue
+        #     doctor_pages = web_scraper.find_doctor_page_links(website, specialist)
+        #     print(doctor_pages)
+        #     try:
+        #         doctor_pages = doctor_pages[0:1] 
+        #         doctor_info = []
+        #         for page in doctor_pages:
+        #             page_scrape = web_scraper.fetch_doctor_information(page, specialist)
+        #             if page_scrape:
+        #                 try:
+        #                     doctor_info.extend(json.loads(page_scrape))
+        #                 except json.JSONDecodeError as e:
+        #                     print(f"Error decoding JSON from {page}: {str(e)}")
+        #                     continue
+        #         scrape[place_id] = {"name": name, "doctor_info": doctor_info}
+        #     except Exception as e:
+        #         scrape[place_id] = {"name": name, "doctor_info": [], "error": f"Error scraping {website}: {str(e)}"}
 
-        except Exception as e:
-            return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
+        #     return jsonify({'response': place_details, 'scraped_data': scrape, 'status': 'success'}), 200
+
+        # except Exception as e:
+        #     return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
 
 
 
