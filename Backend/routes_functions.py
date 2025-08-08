@@ -149,13 +149,13 @@ def function_routes(app, db, auth):
             if not website:
                 scrape[place_id] = {"name": name, "doctor_info": [], "error": "No website found for this place."}
                 continue
-            doctor_pages = web_scraper.find_doctor_page_links(website, specialist)[:1]
+            doctor_pages = web_scraper.find_doctor_page_links(website, specialist)[:3]
             if doctor_pages != []:
                 page_scrape = []
                 for page in doctor_pages:
                     doctor_scrape = web_scraper.fetch_doctor_information(page, specialist)
                     page_scrape.append(doctor_scrape)
-            scrape[place_id] = {"name": name, "doctor_scrape": page_scrape}
+                scrape[place_id] = {"name": name, "website": website, "doctor_scrape": page_scrape, "pages": doctor_pages}
         return scrape
         #     place_details = {}
         #     for place_id in place_ids:

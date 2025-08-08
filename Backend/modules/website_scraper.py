@@ -4,7 +4,7 @@ import requests
 import json
 from groq import Groq
 from bs4 import BeautifulSoup
-from selenium import webdriver
+from seleniumwire import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -43,8 +43,21 @@ class WebsiteScraper:
                 EC.presence_of_element_located((By.TAG_NAME, "body"))
             )
 
+            json_responses = []
+            for request in driver.requests:
+                if request.response and "application/json" in request.response.headers.get("Content-Type", ""):
+                    try:
+                        body = request.response.body.decode("utf-8", errors="ignore")
+                        data = json.loads(body)
+                        json_responses.append({
+                            "url": request.url,
+                            "data": data
+                        })
+                    except Exception:
+                        pass  # ignore bad JSON
+
             html = driver.page_source
-            return html
+            return html, json_responses
         finally:
             driver.quit()
 
@@ -65,14 +78,12 @@ class WebsiteScraper:
         return doctor_pages
 
     def fetch_doctor_information(self, url, doctor_type):
-        html = self.get_rendered_html(url)
-        with open("try.html", "w", encoding="utf-8") as file:
-            file.write(html)
-        # print(html)
+        html, json_responses = self.get_rendered_html(url)
+        
+        json_text = json.dumps(json_responses, ensure_ascii=False)
+
         soup = BeautifulSoup(html, 'html.parser')
-        body_text = soup.find("body")
-        # print(body_text)
-        body_text = body_text.get_text(separator='\n', strip=True)
+        body_text = soup.find("body").get_text(separator='\n', strip=True)
 
         prompt = f"""
         You are a medical website data extraction agent.
@@ -88,8 +99,8 @@ class WebsiteScraper:
 
         Your response should be a just JSON array of objects, each representing a doctor. No other text should be included.
         if no doctors are found, return an empty 
-        Text:
-        '''{body_text[:6000]}'''  # limit to 6000 chars for token safety
+        HTML Text:
+        '''{body_text[:6000]}'''  # limit to 6000 chars for token safety'''
         """
 
         chat_completion = self.client.chat.completions.create(
@@ -108,6 +119,40 @@ class WebsiteScraper:
         )
         try:
             response = chat_completion.choices[0].message.content
+            if response == []:
+                prompt = f"""
+                    You are a medical website data extraction agent.
+
+                    From the following structured json text, extract structured doctor information. 
+                    Only include doctors related to "{doctor_type}". Each doctor should have:
+                    {{
+                        "Name": "Dr. John Doe",
+                        "Designation": "Senior Gynecologist",
+                        "Specialization": "Gynecology",
+                        "Contact": "john.doe@domain",
+                    }}
+
+                    Your response should be a just JSON array of objects, each representing a doctor. No other text should be included.
+                    if no doctors are found, return an empty 
+                    JSON Text:
+                    '''{json_text[:6000]}'''  # limit to 6000 chars for token safety'''
+                """
+
+                chat_completion = self.client.chat.completions.create(
+                    messages=[
+                        {
+
+                        "role": "system",
+                        "content": "You are an expert JSON data extractor. Extract structured doctor information from the jon data in text format provided text."
+                        },
+                        {
+                            "role": "user",
+                            "content": prompt,
+                        }
+                    ],
+                    model="llama-3.3-70b-versatile",
+                )
+                response = chat_completion.choices[0].message.content
             return json.loads(response)
         except Exception as e:
             return f"Error: {str(e)}"
