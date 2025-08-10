@@ -157,42 +157,7 @@ def function_routes(app, db, auth):
                     page_scrape.append(doctor_scrape)
                 scrape[place_id] = {"name": name, "website": website, "doctor_scrape": page_scrape, "pages": doctor_pages}
         return scrape
-        #     place_details = {}
-        #     for place_id in place_ids:
-        #         details = nearby_places.place_details(place_id)
-        #         if details:
-        #             place_details[place_id] = details
-
-        #     scrape = {}
-        #     for place_id, details in list(place_details.items()):
-        #     details = place_details.get("ChIJ7yWLbJFnUjoRVSMJqI5KyN4", {})
-        #     website = details.get('website')
-        #     name = details.get('name', '')
-        #     if not website:
-        #         scrape[place_id] = {"name": name, "doctor_info": [], "error": "No website found for this place."}
-        #         # continue
-        #     doctor_pages = web_scraper.find_doctor_page_links(website, specialist)
-        #     print(doctor_pages)
-        #     try:
-        #         doctor_pages = doctor_pages[0:1] 
-        #         doctor_info = []
-        #         for page in doctor_pages:
-        #             page_scrape = web_scraper.fetch_doctor_information(page, specialist)
-        #             if page_scrape:
-        #                 try:
-        #                     doctor_info.extend(json.loads(page_scrape))
-        #                 except json.JSONDecodeError as e:
-        #                     print(f"Error decoding JSON from {page}: {str(e)}")
-        #                     continue
-        #         scrape[place_id] = {"name": name, "doctor_info": doctor_info}
-        #     except Exception as e:
-        #         scrape[place_id] = {"name": name, "doctor_info": [], "error": f"Error scraping {website}: {str(e)}"}
-
-        #     return jsonify({'response': place_details, 'scraped_data': scrape, 'status': 'success'}), 200
-
-        # except Exception as e:
-        #     return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
-
+        
 
 
     @app.route('/api/pharmacy-finder', methods=['POST'])
@@ -229,6 +194,53 @@ def function_routes(app, db, auth):
                 return jsonify({'response': {}, 'status': 'no_places_found'}), 200
 
             place_ids = [place.get('place_id') for place in pharmacy_info if place.get('place_id')]
+
+            place_details = {}  
+            for place_id in place_ids:
+                details = nearby_places.place_details(place_id)
+                if details:
+                    place_details[place_id] = details
+
+            return jsonify({'response': place_details, 'status': 'success'}), 200
+
+        except Exception as e:
+            return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
+        
+
+    @app.route('/api/hospital-finder', methods=['POST'])
+    @swag_from("docs/hospital-finder.yml")
+    def hospital_finder():
+        """
+        Handles requests to find nearby hospitals based on provided latitude and longitude.
+        Returns a JSON response containing detailed information about each found place, or an error/status message.
+        Request JSON Body:
+            latitude (float): Latitude of the location (required).
+            longitude (float): Longitude of the location (required).
+            type (str, optional): Type of place to search for (default: 'hospital').
+            radius (int, optional): Search radius in meters (default: 1000).
+        Responses:
+            200: Success. Returns a dictionary of place details keyed by place_id, or an empty response if no places found.
+            400: Bad request. Missing latitude or longitude.
+            500: Internal server error. Unexpected error occurred.
+        Returns:
+            flask.Response: JSON response with 'response' (dict), 'status' (str), and optionally 'error' (str).
+        """
+
+        try:
+            data = request.get_json()
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+            type = data.get('type', 'hospital').lower()
+            radius = data.get('radius', 1000)
+
+            if latitude is None or longitude is None:
+                return jsonify({'error': 'Latitude and longitude are required fields.', 'status': 'fail'}), 400
+
+            hospital_info = nearby_places.find_nearby_places(latitude, longitude, type, radius)
+            if not hospital_info:
+                return jsonify({'response': {}, 'status': 'no_places_found'}), 200
+
+            place_ids = [place.get('place_id') for place in hospital_info if place.get('place_id')]
 
             place_details = {}  
             for place_id in place_ids:

@@ -95,10 +95,11 @@ class WebsiteScraper:
             "Designation": "Senior Gynecologist",
             "Specialization": "Gynecology",
             "Contact": "john.doe@domain",
+            "Doctor_Image": "http://example.com/image.jpg"
         }}
 
-        Your response should be a just JSON array of objects, each representing a doctor. No other text should be included.
-        if no doctors are found, return an empty 
+        Your response should be a just JSON array of objects, each representing a doctor. No other text should be included.  If you are unable to find a specified field then just return none
+        if no doctors are found, return an empty array.
         HTML Text:
         '''{body_text[:6000]}'''  # limit to 6000 chars for token safety'''
         """
@@ -130,10 +131,11 @@ class WebsiteScraper:
                         "Designation": "Senior Gynecologist",
                         "Specialization": "Gynecology",
                         "Contact": "john.doe@domain",
+                        "Doctor_Image": "http://example.com/image.jpg"
                     }}
 
-                    Your response should be a just JSON array of objects, each representing a doctor. No other text should be included.
-                    if no doctors are found, return an empty 
+                    Your response should be a just JSON array of objects, each representing a doctor. No other text should be included. If you are unable to find a specified field then just return none
+                    if no doctors are found, return an empty array.
                     JSON Text:
                     '''{json_text[:6000]}'''  # limit to 6000 chars for token safety'''
                 """
