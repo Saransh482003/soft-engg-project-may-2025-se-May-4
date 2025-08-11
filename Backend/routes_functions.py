@@ -143,6 +143,7 @@ def function_routes(app, db, auth):
         """
         return prompt.strip()
         
+    ## Function Routes
     @app.route('/api/chatbot', methods=['POST'])
     @swag_from("docs/chatbot.yml")
     def chatbot_route():
