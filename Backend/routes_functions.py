@@ -46,6 +46,102 @@ def function_routes(app, db, auth):
             return int(val)
         except (TypeError, ValueError):
             return 0
+
+    def generate_personalized_name(gender, personality_type, age):
+        """Generate a name based on personality and demographics"""
+        names = {
+            'male': {
+                'friendly': ['Alex', 'David', 'Michael', 'James', 'Robert'],
+                'professional': ['William', 'Charles', 'Richard', 'Thomas', 'Daniel'],
+                'creative': ['Sebastian', 'Adrian', 'Julian', 'Marcus', 'Oliver'],
+                'analytical': ['Benjamin', 'Nathan', 'Samuel', 'Jonathan', 'Matthew'],
+                'empathetic': ['Christopher', 'Andrew', 'Nicholas', 'Anthony', 'Joseph']
+            },
+            'female': {
+                'friendly': ['Emma', 'Sarah', 'Jessica', 'Ashley', 'Amanda'],
+                'professional': ['Victoria', 'Elizabeth', 'Catherine', 'Margaret', 'Jennifer'],
+                'creative': ['Isabella', 'Sophia', 'Olivia', 'Aria', 'Luna'],
+                'analytical': ['Charlotte', 'Abigail', 'Emily', 'Grace', 'Hannah'],
+                'empathetic': ['Rachel', 'Rebecca', 'Samantha', 'Nicole', 'Michelle']
+            },
+            'non-binary': {
+                'friendly': ['River', 'Sky', 'Phoenix', 'Jordan', 'Taylor'],
+                'professional': ['Morgan', 'Riley', 'Cameron', 'Avery', 'Quinn'],
+                'creative': ['Sage', 'Rowan', 'Kai', 'Nova', 'Ember'],
+                'analytical': ['Blake', 'Drew', 'Casey', 'Finley', 'Reese'],
+                'empathetic': ['Parker', 'Jamie', 'Alex', 'Robin', 'Gray']
+            }
+        }
+        
+        gender_key = gender.lower() if gender.lower() in names else 'non-binary'
+        personality_key = personality_type.lower() if personality_type.lower() in names[gender_key] else 'friendly'
+        
+        import random
+        random.seed(hash(f"{gender}{personality_type}{age}"))  # Consistent name for same params
+        return random.choice(names[gender_key][personality_key])
+
+    def generate_personalized_prompt(name, gender, age, profession, personality_type, expertise_areas, communication_style):
+        """Generate a comprehensive system prompt based on user parameters"""
+        
+        age_context = ""
+        if age < 25:
+            age_context = "You have a youthful, energetic perspective and are up-to-date with modern trends and technology."
+        elif age < 40:
+            age_context = "You have a balanced perspective with both youthful energy and growing life experience."
+        elif age < 60:
+            age_context = "You have substantial life and professional experience, offering mature and thoughtful insights."
+        else:
+            age_context = "You have extensive life wisdom and deep experience, providing thoughtful and measured responses."
+
+        personality_traits = {
+            'friendly': "warm, approachable, and always eager to help. You use casual language and often include encouraging words.",
+            'professional': "formal, precise, and business-oriented. You maintain professionalism while being helpful.",
+            'creative': "imaginative, innovative, and think outside the box. You often provide unique perspectives and creative solutions.",
+            'analytical': "logical, detail-oriented, and data-driven. You break down complex problems systematically.",
+            'empathetic': "understanding, compassionate, and emotionally intelligent. You show genuine care for others' feelings."
+        }
+
+        communication_styles = {
+            'casual': "Use informal language, contractions, and a conversational tone.",
+            'formal': "Use proper grammar, complete sentences, and professional terminology.",
+            'humorous': "Include appropriate humor, wit, and light-heartedness in responses.",
+            'direct': "Be concise, straightforward, and get to the point quickly.",
+            'detailed': "Provide comprehensive explanations with examples and thorough analysis."
+        }
+
+        personality_desc = personality_traits.get(personality_type.lower(), personality_traits['friendly'])
+        comm_style_desc = communication_styles.get(communication_style.lower(), communication_styles['casual'])
+        
+        expertise_context = ""
+        if expertise_areas:
+            if isinstance(expertise_areas, list):
+                expertise_list = ", ".join(expertise_areas)
+            else:
+                expertise_list = str(expertise_areas)
+            expertise_context = f"Your areas of expertise include: {expertise_list}. You can provide informed insights in these areas."
+
+        prompt = f"""
+            You are {name}, a {age}-year-old {gender} {profession}. {age_context}
+
+            Personality: You are {personality_desc}
+
+            Communication Style: {comm_style_desc}
+
+            {expertise_context}
+
+            Key Instructions:
+            - Always stay in character as {name}
+            - Respond strictly according to your personality type and communication style
+            - Draw from your professional background when relevant
+            - Maintain consistency with your age and life experience
+            - Be helpful while staying true to your defined characteristics
+            - If asked about your background, refer to the details provided above
+            - Automatically detect the user's language and respond in the same language
+            - Use markdown formatting for better readability
+
+            Remember: You are not an AI assistant - you are {name}, a real person with the characteristics described above. Respond as this person would naturally respond.
+        """
+        return prompt.strip()
         
     @app.route('/api/chatbot', methods=['POST'])
     @swag_from("docs/chatbot.yml")
@@ -65,17 +161,148 @@ def function_routes(app, db, auth):
         
         data = request.get_json()
         user_input = data.get('question', '').strip()
-        history = data.get('history', {"user": "", "assistant": ""})
+        history = data.get('history', [])
 
         if user_input is None or user_input == '':
             return jsonify({'response': 'Please enter a valid question.'}), 400
 
         try:
-            reply = chatbot.get_response(user_input, history)
+            # Build the full conversation history for the chatbot
+            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            
+            # Add the full conversation history if provided
+            if isinstance(history, list) and history:
+                messages.extend(history)
+            elif isinstance(history, dict) and (history.get("user") or history.get("assistant")):
+                # Handle backward compatibility with old format
+                if history.get("user"):
+                    messages.append({"role": "user", "content": history["user"]})
+                if history.get("assistant"):
+                    messages.append({"role": "assistant", "content": history["assistant"]})
+            
+            # Add the current user input
+            messages.append({"role": "user", "content": user_input})
+            
+            # Get response from chatbot with full history
+            chat_completion = chatbot.client.chat.completions.create(
+                messages=messages,
+                model="llama-3.3-70b-versatile",
+            )
+            reply = chat_completion.choices[0].message.content
             return jsonify({'response': reply}), 200
         except Exception as e:
             return jsonify({'response': f"Error: {str(e)}"}), 500
 
+    @app.route('/api/personal-chatbot', methods=['POST'])
+    @swag_from("docs/personal_chatbot.yml")
+    def personal_chatbot():
+        """
+        Creates a personalized chatbot based on user-defined characteristics.
+        
+        Request JSON Body:
+            question (str): The user's question/message (required).
+            history (list): Previous conversation history as list of message objects (optional).
+            gender (str): Gender of the persona ('male', 'female', 'non-binary') (required).
+            age (int): Age of the persona (required).
+            profession (str): Professional background (required).
+            personality_type (str): Personality type ('friendly', 'professional', 'creative', 'analytical', 'empathetic') (required).
+            expertise_areas (list/str): Areas of expertise (optional).
+            communication_style (str): Communication style ('casual', 'formal', 'humorous', 'direct', 'detailed') (optional, defaults to 'casual').
+            
+        Returns:
+            JSON response with:
+                - response: The personalized chatbot's reply
+                - persona_name: The generated name for this persona
+                - status: 'success' or error details
+        """
+        
+        try:
+            data = request.get_json()
+            
+            # Required fields
+            user_input = data.get('question', '').strip()
+            gender = data.get('gender', '').strip()
+            age = data.get('age')
+            profession = data.get('profession', '').strip()
+            personality_type = data.get('personality_type', '').strip()
+            
+            # Optional fields
+            history = data.get('history', [])
+            expertise_areas = data.get('expertise_areas', [])
+            communication_style = data.get('communication_style', 'casual').strip()
+            
+            # Validation
+            if not user_input:
+                return jsonify({'error': 'Question is required.', 'status': 'fail'}), 400
+                
+            if not all([gender, age, profession, personality_type]):
+                return jsonify({'error': 'Gender, age, profession, and personality_type are required fields.', 'status': 'fail'}), 400
+                
+            try:
+                age = int(age)
+                if age < 1 or age > 120:
+                    return jsonify({'error': 'Age must be between 1 and 120.', 'status': 'fail'}), 400
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Age must be a valid number.', 'status': 'fail'}), 400
+            
+            # Validate personality type
+            valid_personalities = ['friendly', 'professional', 'creative', 'analytical', 'empathetic']
+            if personality_type.lower() not in valid_personalities:
+                return jsonify({'error': f'Personality type must be one of: {", ".join(valid_personalities)}', 'status': 'fail'}), 400
+            
+            # Validate communication style
+            valid_styles = ['casual', 'formal', 'humorous', 'direct', 'detailed']
+            if communication_style.lower() not in valid_styles:
+                communication_style = 'casual'  # Default fallback
+            
+            # Generate persona name and system prompt
+            persona_name = generate_personalized_name(gender, personality_type, age)
+            personalized_prompt = generate_personalized_prompt(
+                persona_name, gender, age, profession, personality_type, 
+                expertise_areas, communication_style
+            )
+            
+            # Build the conversation messages
+            messages = [{"role": "system", "content": personalized_prompt}]
+            
+            # Add conversation history if provided
+            if isinstance(history, list) and history:
+                messages.extend(history)
+            elif isinstance(history, dict) and (history.get("user") or history.get("assistant")):
+                # Handle backward compatibility
+                if history.get("user"):
+                    messages.append({"role": "user", "content": history["user"]})
+                if history.get("assistant"):
+                    messages.append({"role": "assistant", "content": history["assistant"]})
+            
+            # Add current user input
+            messages.append({"role": "user", "content": user_input})
+            
+            # Get response from the personalized chatbot
+            chat_completion = chatbot.client.chat.completions.create(
+                messages=messages,
+                model="llama-3.3-70b-versatile",
+                temperature=0.8,  # Slightly higher temperature for more personality
+            )
+            
+            reply = chat_completion.choices[0].message.content
+            
+            return jsonify({
+                'response': reply,
+                'persona_name': persona_name,
+                'persona_details': {
+                    'gender': gender,
+                    'age': age,
+                    'profession': profession,
+                    'personality_type': personality_type,
+                    'communication_style': communication_style,
+                    'expertise_areas': expertise_areas
+                },
+                'status': 'success'
+            }), 200
+            
+        except Exception as e:
+            return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
 
     @app.route('/api/doctor-finder', methods=['POST'])
     @swag_from("docs/doctor_finder.yml")

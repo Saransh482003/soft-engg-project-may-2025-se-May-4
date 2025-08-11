@@ -1,0 +1,129 @@
+tags:
+  - Chatbot Functions
+summary: Personal Chatbot with Custom Persona
+description: |
+  Creates a personalized chatbot based on user-defined characteristics including gender, age, profession, 
+  personality type, expertise areas, and communication style. The chatbot will adopt a persona and respond 
+  according to the specified traits.
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - question
+        - gender
+        - age
+        - profession
+        - personality_type
+      properties:
+        question:
+          type: string
+          description: The user's question or message
+          example: "Can you help me understand machine learning?"
+        history:
+          type: array
+          description: Previous conversation history as an array of message objects
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: ["user", "assistant"]
+              content:
+                type: string
+          example: 
+            - role: "user"
+              content: "Hello, how are you?"
+            - role: "assistant"
+              content: "Hi! I'm doing great, thanks for asking!"
+        gender:
+          type: string
+          enum: ["male", "female", "non-binary"]
+          description: Gender of the persona
+          example: "female"
+        age:
+          type: integer
+          minimum: 1
+          maximum: 120
+          description: Age of the persona
+          example: 28
+        profession:
+          type: string
+          description: Professional background of the persona
+          example: "Software Engineer"
+        personality_type:
+          type: string
+          enum: ["friendly", "professional", "creative", "analytical", "empathetic"]
+          description: Personality type that defines behavioral traits
+          example: "analytical"
+        expertise_areas:
+          type: array
+          items:
+            type: string
+          description: Areas of expertise (optional)
+          example: ["Machine Learning", "Python Programming", "Data Science"]
+        communication_style:
+          type: string
+          enum: ["casual", "formal", "humorous", "direct", "detailed"]
+          description: Communication style preference
+          default: "casual"
+          example: "detailed"
+responses:
+  200:
+    description: Successful response from personalized chatbot
+    schema:
+      type: object
+      properties:
+        response:
+          type: string
+          description: The personalized chatbot's reply
+          example: "As an analytical software engineer, I'd be happy to break down machine learning for you! Machine learning is essentially..."
+        persona_name:
+          type: string
+          description: Generated name for this persona
+          example: "Charlotte"
+        persona_details:
+          type: object
+          description: Summary of the persona characteristics
+          properties:
+            gender:
+              type: string
+            age:
+              type: integer
+            profession:
+              type: string
+            personality_type:
+              type: string
+            communication_style:
+              type: string
+            expertise_areas:
+              type: array
+              items:
+                type: string
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad request - missing required fields or invalid data
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Gender, age, profession, and personality_type are required fields."
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An unexpected error occurred: [error details]"
+        status:
+          type: string
+          example: "fail"
