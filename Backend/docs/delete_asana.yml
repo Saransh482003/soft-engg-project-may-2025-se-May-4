@@ -1,0 +1,45 @@
+Delete a yoga asana and all its associated images
+---
+tags:
+  - Asanas
+parameters:
+  - name: asana_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the asana to delete
+    example: 1
+responses:
+  200:
+    description: Asana deleted successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Asana \"Mountain Pose\" deleted successfully"
+        status:
+          type: string
+          example: "success"
+  404:
+    description: Asana not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error deleting asana: Database error"
+        status:
+          type: string
+          example: "fail"

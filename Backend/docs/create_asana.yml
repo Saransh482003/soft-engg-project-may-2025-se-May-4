@@ -1,0 +1,103 @@
+Create a new yoga asana
+---
+tags:
+  - Asanas
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the asana
+          example: "Mountain Pose"
+        sanskrit_name:
+          type: string
+          description: Sanskrit name of the asana
+          example: "Tadasana"
+        description:
+          type: string
+          description: Detailed description of the asana
+          example: "A foundational standing pose that improves posture and balance"
+        difficulty:
+          type: string
+          enum: ["Beginner", "Intermediate", "Advanced"]
+          description: Difficulty level
+          example: "Beginner"
+        duration_minutes:
+          type: integer
+          description: Duration to hold the pose in minutes
+          example: 2
+        benefits:
+          type: string
+          description: Health benefits of the asana
+          example: "Improves posture, strengthens legs, calms mind"
+        instructions:
+          type: string
+          description: Step-by-step instructions
+          example: "1. Stand tall with feet together 2. Distribute weight evenly 3. Breathe deeply"
+        images:
+          type: array
+          description: Initial images for the asana
+          items:
+            oneOf:
+              - type: string
+                description: Image URL
+                example: "https://example.com/tadasana.jpg"
+              - type: object
+                properties:
+                  image_url:
+                    type: string
+                    description: Image URL
+                    example: "https://example.com/tadasana_front.jpg"
+                  image_type:
+                    type: string
+                    description: Type of image
+                    example: "front_view"
+                  display_order:
+                    type: integer
+                    description: Display order
+                    example: 1
+responses:
+  201:
+    description: Asana created successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Asana created successfully"
+        asana:
+          type: object
+          description: Created asana details
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad request
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana name is required"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error creating asana: Database error"
+        status:
+          type: string
+          example: "fail"

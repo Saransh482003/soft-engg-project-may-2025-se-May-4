@@ -1,0 +1,85 @@
+Update an existing yoga asana
+---
+tags:
+  - Asanas
+consumes:
+  - application/json
+parameters:
+  - name: asana_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the asana to update
+    example: 1
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the asana
+          example: "Mountain Pose"
+        sanskrit_name:
+          type: string
+          description: Sanskrit name of the asana
+          example: "Tadasana"
+        description:
+          type: string
+          description: Detailed description of the asana
+          example: "A foundational standing pose that improves posture and balance"
+        difficulty:
+          type: string
+          enum: ["Beginner", "Intermediate", "Advanced"]
+          description: Difficulty level
+          example: "Beginner"
+        duration_minutes:
+          type: integer
+          description: Duration to hold the pose in minutes
+          example: 3
+        benefits:
+          type: string
+          description: Health benefits of the asana
+          example: "Improves posture, strengthens legs, calms mind"
+        instructions:
+          type: string
+          description: Step-by-step instructions
+          example: "1. Stand tall with feet together 2. Distribute weight evenly 3. Breathe deeply"
+responses:
+  200:
+    description: Asana updated successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Asana updated successfully"
+        asana:
+          type: object
+          description: Updated asana details
+        status:
+          type: string
+          example: "success"
+  404:
+    description: Asana not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error updating asana: Database error"
+        status:
+          type: string
+          example: "fail"

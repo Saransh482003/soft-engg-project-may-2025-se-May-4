@@ -1,0 +1,91 @@
+Add images to an existing yoga asana
+---
+tags:
+  - Asanas
+consumes:
+  - application/json
+parameters:
+  - name: asana_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the asana to add images to
+    example: 1
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - images
+      properties:
+        images:
+          type: array
+          description: Array of images to add
+          items:
+            oneOf:
+              - type: string
+                description: Image URL
+                example: "https://example.com/pose_step1.jpg"
+              - type: object
+                properties:
+                  image_url:
+                    type: string
+                    description: Image URL
+                    example: "https://example.com/pose_step1.jpg"
+                  image_type:
+                    type: string
+                    description: Type of image
+                    example: "step_1"
+                  display_order:
+                    type: integer
+                    description: Display order
+                    example: 3
+responses:
+  200:
+    description: Images added successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "2 images added successfully"
+        asana:
+          type: object
+          description: Updated asana details with new images
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad request
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No images provided"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: Asana not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error adding images: Database error"
+        status:
+          type: string
+          example: "fail"

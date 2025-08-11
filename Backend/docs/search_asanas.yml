@@ -1,0 +1,107 @@
+Search yoga asanas by name, Sanskrit name, or description
+---
+tags:
+  - Asanas
+parameters:
+  - name: q
+    in: query
+    type: string
+    required: true
+    description: Search query
+    example: "mountain"
+  - name: difficulty
+    in: query
+    type: string
+    description: Filter by difficulty level
+    example: "Beginner"
+  - name: limit
+    in: query
+    type: integer
+    description: Maximum number of results to return
+    example: 10
+responses:
+  200:
+    description: Search results retrieved successfully
+    schema:
+      type: object
+      properties:
+        asanas:
+          type: array
+          description: Array of matching asana objects
+          items:
+            type: object
+            properties:
+              asana_id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "Mountain Pose"
+              sanskrit_name:
+                type: string
+                example: "Tadasana"
+              description:
+                type: string
+                example: "A foundational standing pose"
+              difficulty:
+                type: string
+                example: "Beginner"
+              duration_minutes:
+                type: integer
+                example: 2
+              benefits:
+                type: string
+                example: "Improves posture, strengthens legs"
+              instructions:
+                type: string
+                example: "Stand tall with feet together"
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    image_id:
+                      type: integer
+                      example: 1
+                    image_url:
+                      type: string
+                      example: "https://example.com/tadasana.jpg"
+                    image_type:
+                      type: string
+                      example: "front_view"
+                    display_order:
+                      type: integer
+                      example: 1
+        count:
+          type: integer
+          description: Number of asanas found
+          example: 3
+        search_query:
+          type: string
+          description: The search query used
+          example: "mountain"
+        status:
+          type: string
+          example: "success"
+  400:
+    description: Bad request
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Search query is required"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error searching asanas: Database error"
+        status:
+          type: string
+          example: "fail"

@@ -1,0 +1,51 @@
+Delete a specific image from an asana
+---
+tags:
+  - Asanas
+parameters:
+  - name: asana_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the asana
+    example: 1
+  - name: image_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the image to delete
+    example: 2
+responses:
+  200:
+    description: Image deleted successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Image deleted successfully"
+        status:
+          type: string
+          example: "success"
+  404:
+    description: Asana or image not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Image not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error deleting image: Database error"
+        status:
+          type: string
+          example: "fail"

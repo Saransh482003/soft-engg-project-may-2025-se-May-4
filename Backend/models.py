@@ -178,11 +178,47 @@ class SymptomLogs(db.Model):
     logged_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
 
-class YogaVideos(db.Model):
-    __tablename__ = 'yoga_videos'
-    video_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
+class YogaAsana(db.Model):
+    __tablename__ = 'yoga_asana'
+    asana_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    sanskrit_name = db.Column(db.String, nullable=True)
     description = db.Column(db.Text)
-    video_url = db.Column(db.String, nullable=False, unique=True)
     difficulty = db.Column(db.String)
     duration_minutes = db.Column(db.Integer)
+    benefits = db.Column(db.Text)
+    instructions = db.Column(db.Text)
+    
+    # Relationship to images
+    images = db.relationship('YogaAsanaImages', backref='asana', cascade='all, delete-orphan')
+    
+    def to_dict(self):
+        return {
+            "asana_id": self.asana_id,
+            "name": self.name,
+            "sanskrit_name": self.sanskrit_name,
+            "description": self.description,
+            "difficulty": self.difficulty,
+            "duration_minutes": self.duration_minutes,
+            "benefits": self.benefits,
+            "instructions": self.instructions,
+            "images": [img.to_dict() for img in self.images]
+        }
+
+
+class YogaAsanaImages(db.Model):
+    __tablename__ = 'yoga_asana_images'
+    image_id = db.Column(db.Integer, primary_key=True)
+    asana_id = db.Column(db.Integer, db.ForeignKey('yoga_asana.asana_id'), nullable=False)
+    image_url = db.Column(db.String, nullable=False)
+    image_type = db.Column(db.String, nullable=True)  # e.g., 'starting_position', 'final_position', 'step_1', etc.
+    display_order = db.Column(db.Integer, default=1)  # Order in which images should be displayed
+    
+    def to_dict(self):
+        return {
+            "image_id": self.image_id,
+            "asana_id": self.asana_id,
+            "image_url": self.image_url,
+            "image_type": self.image_type,
+            "display_order": self.display_order
+        }

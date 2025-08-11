@@ -1,0 +1,86 @@
+Get a specific yoga asana by ID
+---
+tags:
+  - Asanas
+parameters:
+  - name: asana_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the asana to retrieve
+    example: 1
+responses:
+  200:
+    description: Asana retrieved successfully
+    schema:
+      type: object
+      properties:
+        asana:
+          type: object
+          properties:
+            asana_id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Mountain Pose"
+            sanskrit_name:
+              type: string
+              example: "Tadasana"
+            description:
+              type: string
+              example: "A foundational standing pose that improves posture and balance"
+            difficulty:
+              type: string
+              example: "Beginner"
+            duration_minutes:
+              type: integer
+              example: 2
+            benefits:
+              type: string
+              example: "Improves posture, strengthens legs, calms mind"
+            instructions:
+              type: string
+              example: "1. Stand tall with feet together 2. Distribute weight evenly"
+            images:
+              type: array
+              items:
+                type: object
+                properties:
+                  image_id:
+                    type: integer
+                    example: 1
+                  image_url:
+                    type: string
+                    example: "https://example.com/tadasana_front.jpg"
+                  image_type:
+                    type: string
+                    example: "front_view"
+                  display_order:
+                    type: integer
+                    example: 1
+        status:
+          type: string
+          example: "success"
+  404:
+    description: Asana not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error retrieving asana: Database error"
+        status:
+          type: string
+          example: "fail"
