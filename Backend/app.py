@@ -9,11 +9,11 @@ from config import app,db
 from routes_functions import function_routes
 from routes_user import routes_user
 from routes_analytics import routes_analytics
-from routes_content import routes_content
 from routes_doctors import routes_doctors
 from routes_emergency import routes_emergency
 from routes_reminders import routes_reminders
 from routes_health import routes_health
+from routes_asanas import asana_routes
 
 CORS(app)
 
@@ -29,7 +29,7 @@ def index():
 function_routes(app, db, auth)
 routes_user(app, db)
 routes_analytics(app, db)
-routes_content(app, db)
+asana_routes(app)
 routes_doctors(app, db)
 routes_emergency(app, db)
 routes_reminders(app, db)

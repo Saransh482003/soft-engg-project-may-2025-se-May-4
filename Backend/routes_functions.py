@@ -5,6 +5,7 @@ import geocoder
 from modules.chatbot import Chatbot
 from modules.nearby_places import NearbyPlaces
 from modules.website_scraper import WebsiteScraper
+from modules.generative_ai import GenerativeAI
 from flasgger.utils import swag_from
 import json
 
@@ -34,6 +35,7 @@ def function_routes(app, db, auth):
     chatbot = Chatbot(api_key=auth.get("GROQ_API_KEY"), system_prompt=SYSTEM_PROMPT)
     nearby_places = NearbyPlaces(api_key=auth.get("GOOGLE_MAPS_API_KEY"))
     web_scraper = WebsiteScraper(api_key=auth.get("GROQ_API_KEY"))
+    generative_ai = GenerativeAI(api_key=auth.get("GEMINI_API_KEY"))
 
     def safe_float(val):
         try:
@@ -480,3 +482,18 @@ def function_routes(app, db, auth):
 
         except Exception as e:
             return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
+
+    @app.route("/api/generate-asana-images", methods=["POST"])
+    def generate_asana_images():
+        data = request.get_json()
+        asana_name = data.get("asana_name")
+        limit = data.get("limit", 4)
+
+        if not asana_name:
+            return jsonify({"error": "asana_name is required"}), 400
+
+        try:
+            return generative_ai.generate_asana_images(asana_name, limit)
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
