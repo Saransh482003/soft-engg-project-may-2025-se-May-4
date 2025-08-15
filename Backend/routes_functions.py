@@ -329,7 +329,7 @@ def function_routes(app, db, auth):
             200: Success. Returns the place details and scraped doctor data.
             400/500: Error in processing or scraping data.
         """
-
+        print("Doctor Finder Endpoint Called")
         # try:
         data = request.get_json()
         latitude = data.get('latitude')
@@ -338,7 +338,7 @@ def function_routes(app, db, auth):
         radius = data.get('radius', 1000)
         specialist = data.get('specialist', 'obstetrician')
         limit = data.get('limit', 5)
-
+        print(specialist)
         if latitude is None or longitude is None:
             return jsonify({'error': 'Latitude and longitude are required fields.', 'status': 'fail'}), 400
 

@@ -9,7 +9,7 @@ class NearbyPlaces:
     def __init__(self, api_key):
         self.api_key = api_key
 
-    def find_nearby_places(self, lat, lon, type="hospitals", radius=5000):
+    def find_nearby_places(self, lat, lon, type="hospital", radius=5000):
         google_maps_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
         params = {
             'location': f'{lat},{lon}',
