@@ -54,7 +54,6 @@ def asana_routes(app):
                         new_image = YogaAsanaImages(
                             asana_id=new_asana.asana_id,
                             image_url=image_data.get('image_url'),
-                            image_type=image_data.get('image_type'),
                             display_order=image_data.get('display_order', idx + 1)
                         )
                     else:
@@ -117,7 +116,6 @@ def asana_routes(app):
                     new_image = YogaAsanaImages(
                         asana_id=asana_id,
                         image_url=image_data.get('image_url'),
-                        image_type=image_data.get('image_type'),
                         display_order=image_data.get('display_order', current_max_order + idx + 1)
                     )
                 else:
@@ -144,10 +142,15 @@ def asana_routes(app):
     @swag_from("docs/get_asanas.yml")
     def get_asanas():
         """
-        Get all yoga asanas with optional filtering.
+        Get all yoga asanas with optional filtering and search.
         
         Query Parameters:
-            difficulty (str): Filter by difficulty level
+            name (str): Filter by asana name (partial match)
+            sanskrit_name (str): Filter by sanskrit name (partial match)
+            difficulty (str): Filter by difficulty level (partial match)
+            duration_min (int): Minimum duration in minutes
+            duration_max (int): Maximum duration in minutes
+            search (str): General search across name, sanskrit_name, description, and benefits
             limit (int): Maximum number of results to return
             offset (int): Number of results to skip (for pagination)
             
@@ -156,7 +159,12 @@ def asana_routes(app):
         """
         try:
             # Get query parameters
+            name = request.args.get('name')
+            sanskrit_name = request.args.get('sanskrit_name')
             difficulty = request.args.get('difficulty')
+            duration_min = request.args.get('duration_min', type=int)
+            duration_max = request.args.get('duration_max', type=int)
+            search = request.args.get('search')
             limit = request.args.get('limit', type=int)
             offset = request.args.get('offset', type=int, default=0)
             
@@ -164,8 +172,36 @@ def asana_routes(app):
             query = YogaAsana.query
             
             # Apply filters
+            if name:
+                query = query.filter(YogaAsana.name.ilike(f'%{name}%'))
+            
+            if sanskrit_name:
+                query = query.filter(YogaAsana.sanskrit_name.ilike(f'%{sanskrit_name}%'))
+            
             if difficulty:
                 query = query.filter(YogaAsana.difficulty.ilike(f'%{difficulty}%'))
+            
+            if duration_min:
+                query = query.filter(YogaAsana.duration_minutes >= duration_min)
+            
+            if duration_max:
+                query = query.filter(YogaAsana.duration_minutes <= duration_max)
+            
+            # General search across multiple fields
+            if search:
+                search_term = f'%{search}%'
+                query = query.filter(
+                    db.or_(
+                        YogaAsana.name.ilike(search_term),
+                        YogaAsana.sanskrit_name.ilike(search_term),
+                        YogaAsana.description.ilike(search_term),
+                        YogaAsana.benefits.ilike(search_term),
+                        YogaAsana.difficulty.ilike(search_term)
+                    )
+                )
+            
+            # Get total count for pagination info
+            total_count = query.count()
             
             # Apply pagination
             if limit:
@@ -179,6 +215,9 @@ def asana_routes(app):
             return jsonify({
                 'asanas': [asana.to_dict() for asana in asanas],
                 'count': len(asanas),
+                'total_count': total_count,
+                'offset': offset,
+                'limit': limit,
                 'status': 'success'
             }), 200
             

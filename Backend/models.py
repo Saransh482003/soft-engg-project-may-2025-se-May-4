@@ -211,7 +211,6 @@ class YogaAsanaImages(db.Model):
     image_id = db.Column(db.Integer, primary_key=True)
     asana_id = db.Column(db.Integer, db.ForeignKey('yoga_asana.asana_id'), nullable=False)
     image_url = db.Column(db.String, nullable=False)
-    image_type = db.Column(db.String, nullable=True)  # e.g., 'starting_position', 'final_position', 'step_1', etc.
     display_order = db.Column(db.Integer, default=1)  # Order in which images should be displayed
     
     def to_dict(self):
@@ -219,28 +218,5 @@ class YogaAsanaImages(db.Model):
             "image_id": self.image_id,
             "asana_id": self.asana_id,
             "image_url": self.image_url,
-            "image_type": self.image_type,
             "display_order": self.display_order
-        }
-
-
-class YogaVideos(db.Model):
-    __tablename__ = 'yoga_videos'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    video_url = db.Column(db.String, nullable=False)
-    difficulty = db.Column(db.String, nullable=True)
-    duration_minutes = db.Column(db.Integer, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "video_url": self.video_url,
-            "difficulty": self.difficulty,
-            "duration_minutes": self.duration_minutes,
-            "created_at": self.created_at.isoformat() if self.created_at else None
         }
