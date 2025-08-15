@@ -6,93 +6,105 @@ import json
 
 def asana_routes(app):
     
-    @app.route('/api/asanas', methods=['POST'])
-    @swag_from("docs/create_asana.yml")
-    def create_asana():
+    # @app.route('/api/asanas', methods=['POST'])
+    # @swag_from("docs/create_asana.yml")
+    @app.route('/api/asanas/by-name', methods=['POST'])
+    @swag_from("docs/get_asana_by_name.yml")
+    def get_asana_by_name():
         """
-        Create a new yoga asana.
-        Accepts JSON data with asana details and optionally initial images.
+        Get a specific yoga asana by name.
         
+        Request JSON Body:
+            name (str): Name of the asana to retrieve (required)
+            
         Returns:
-            JSON response with created asana details or error message.
+            JSON response with asana details or error message.
         """
         try:
             data = request.get_json()
-            
-            # Validate required fields
-            if not data.get('name'):
+            if not data or not data.get('name'):
                 return jsonify({'error': 'Asana name is required', 'status': 'fail'}), 400
             
-            # Create new asana
-            new_asana = YogaAsana(
-                name=data.get('name'),
-                sanskrit_name=data.get('sanskrit_name'),
-                description=data.get('description'),
-                difficulty=data.get('difficulty', 'Beginner'),
-                duration_minutes=data.get('duration_minutes'),
-                benefits=data.get('benefits'),
-                instructions=data.get('instructions')
-            )
+            asana_name = data.get('name').strip()
             
-            # Add to database
-            db.session.add(new_asana)
-            db.session.flush()  # Get the asana_id
+            # Search for asana by exact name or partial match
+            asana = YogaAsana.query.filter(
+                db.or_(
+                    YogaAsana.name.ilike(asana_name),
+                    YogaAsana.name.ilike(f'%{asana_name}%'),
+                    YogaAsana.sanskrit_name.ilike(asana_name),
+                    YogaAsana.sanskrit_name.ilike(f'%{asana_name}%')
+                )
+            ).first()
             
-            # Add initial images if provided
-            images = data.get('images', [])
-            if images:
-                for idx, image_data in enumerate(images):
-                    if isinstance(image_data, str):
-                        # Simple URL string
-                        new_image = YogaAsanaImages(
-                            asana_id=new_asana.asana_id,
-                            image_url=image_data,
-                            display_order=idx + 1
-                        )
-                    elif isinstance(image_data, dict):
-                        # Detailed image object
-                        new_image = YogaAsanaImages(
-                            asana_id=new_asana.asana_id,
-                            image_url=image_data.get('image_url'),
-                            display_order=image_data.get('display_order', idx + 1)
-                        )
-                    else:
-                        continue
-                    
-                    db.session.add(new_image)
-            
-            db.session.commit()
+            if not asana:
+                return jsonify({'error': f'Asana "{asana_name}" not found', 'status': 'fail'}), 404
             
             return jsonify({
-                'message': 'Asana created successfully',
-                'asana': new_asana.to_dict(),
+                'asana': asana.to_dict(),
                 'status': 'success'
-            }), 201
+            }), 200
             
         except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': f'Error creating asana: {str(e)}', 'status': 'fail'}), 500
+            return jsonify({'error': f'Error retrieving asana: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas/<int:asana_id>/images', methods=['POST'])
+    @app.route('/api/asanas/get-by-id', methods=['POST'])
+    @swag_from("docs/get_asana_by_id.yml")
+    def get_asana_by_id():
+        """
+        Get a specific yoga asana by ID.
+        
+        Request JSON Body:
+            asana_id (int): ID of the asana to retrieve (required)
+            
+        Returns:
+            JSON response with asana details or error message.
+        """
+        try:
+            data = request.get_json()
+            if not data or not data.get('asana_id'):
+                return jsonify({'error': 'Asana ID is required', 'status': 'fail'}), 400
+            
+            asana_id = data.get('asana_id')
+            asana = YogaAsana.query.get(asana_id)
+            if not asana:
+                return jsonify({'error': 'Asana not found', 'status': 'fail'}), 404
+            
+            return jsonify({
+                'asana': asana.to_dict(),
+                'status': 'success'
+            }), 200
+            
+        except Exception as e:
+            return jsonify({'error': f'Error retrieving asana: {str(e)}', 'status': 'fail'}), 500
+    
+    
+    @app.route('/api/asanas/add-images', methods=['POST'])
     @swag_from("docs/add_asana_images.yml")
-    def add_asana_images(asana_id):
+    def add_asana_images():
         """
         Add images to an existing yoga asana.
         
-        Args:
-            asana_id (int): ID of the asana to add images to
+        Request JSON Body:
+            asana_id (int): ID of the asana to add images to (required)
+            images (list): List of image URLs or image objects (required)
             
         Returns:
             JSON response with updated asana details or error message.
         """
         try:
+            data = request.get_json()
+            if not data or not data.get('asana_id'):
+                return jsonify({'error': 'Asana ID is required', 'status': 'fail'}), 400
+            
+            asana_id = data.get('asana_id')
+            
             # Check if asana exists
             asana = YogaAsana.query.get(asana_id)
             if not asana:
                 return jsonify({'error': 'Asana not found', 'status': 'fail'}), 404
             
-            data = request.get_json()
             images = data.get('images', [])
             
             if not images:
@@ -138,13 +150,13 @@ def asana_routes(app):
             return jsonify({'error': f'Error adding images: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas', methods=['GET'])
+    @app.route('/api/asanas/search', methods=['POST'])
     @swag_from("docs/get_asanas.yml")
     def get_asanas():
         """
         Get all yoga asanas with optional filtering and search.
         
-        Query Parameters:
+        Request JSON Body:
             name (str): Filter by asana name (partial match)
             sanskrit_name (str): Filter by sanskrit name (partial match)
             difficulty (str): Filter by difficulty level (partial match)
@@ -158,15 +170,17 @@ def asana_routes(app):
             JSON response with list of asanas.
         """
         try:
-            # Get query parameters
-            name = request.args.get('name')
-            sanskrit_name = request.args.get('sanskrit_name')
-            difficulty = request.args.get('difficulty')
-            duration_min = request.args.get('duration_min', type=int)
-            duration_max = request.args.get('duration_max', type=int)
-            search = request.args.get('search')
-            limit = request.args.get('limit', type=int)
-            offset = request.args.get('offset', type=int, default=0)
+            data = request.get_json() or {}
+            
+            # Get parameters from request body
+            name = data.get('name')
+            sanskrit_name = data.get('sanskrit_name')
+            difficulty = data.get('difficulty')
+            duration_min = data.get('duration_min')
+            duration_max = data.get('duration_max')
+            search = data.get('search')
+            limit = data.get('limit')
+            offset = data.get('offset', 0)
             
             # Build query
             query = YogaAsana.query
@@ -223,22 +237,23 @@ def asana_routes(app):
             
         except Exception as e:
             return jsonify({'error': f'Error retrieving asanas: {str(e)}', 'status': 'fail'}), 500
-    
-    
-    @app.route('/api/asanas/<int:asana_id>', methods=['GET'])
+
+
+    @app.route('/api/asanas-name', methods=['POST'])
     @swag_from("docs/get_asana_by_id.yml")
-    def get_asana_by_id(asana_id):
+    def get_asana_by_id(asana_name):
         """
-        Get a specific yoga asana by ID.
-        
+        Get a specific yoga asana by name.
+
         Args:
-            asana_id (int): ID of the asana to retrieve
-            
+            asana_name (str): Name of the asana to retrieve
+
         Returns:
             JSON response with asana details or error message.
         """
+        asana_name = request.json.get('asana_name')
         try:
-            asana = YogaAsana.query.get(asana_id)
+            asana = YogaAsana.query.filter(YogaAsana.name == asana_name).first()
             if not asana:
                 return jsonify({'error': 'Asana not found', 'status': 'fail'}), 404
             
@@ -251,24 +266,34 @@ def asana_routes(app):
             return jsonify({'error': f'Error retrieving asana: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas/<int:asana_id>', methods=['PUT'])
+    @app.route('/api/asanas/update', methods=['POST'])
     @swag_from("docs/update_asana.yml")
-    def update_asana(asana_id):
+    def update_asana():
         """
         Update an existing yoga asana.
         
-        Args:
-            asana_id (int): ID of the asana to update
+        Request JSON Body:
+            asana_id (int): ID of the asana to update (required)
+            name (str): New name for the asana (optional)
+            sanskrit_name (str): New sanskrit name (optional)
+            description (str): New description (optional)
+            difficulty (str): New difficulty level (optional)
+            duration_minutes (int): New duration (optional)
+            benefits (str): New benefits (optional)
+            instructions (str): New instructions (optional)
             
         Returns:
             JSON response with updated asana details or error message.
         """
         try:
+            data = request.get_json()
+            if not data or not data.get('asana_id'):
+                return jsonify({'error': 'Asana ID is required', 'status': 'fail'}), 400
+            
+            asana_id = data.get('asana_id')
             asana = YogaAsana.query.get(asana_id)
             if not asana:
                 return jsonify({'error': 'Asana not found', 'status': 'fail'}), 404
-            
-            data = request.get_json()
             
             # Update fields if provided
             if 'name' in data:
@@ -299,19 +324,24 @@ def asana_routes(app):
             return jsonify({'error': f'Error updating asana: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas/<int:asana_id>', methods=['DELETE'])
+    @app.route('/api/asanas/delete', methods=['POST'])
     @swag_from("docs/delete_asana.yml")
-    def delete_asana(asana_id):
+    def delete_asana():
         """
         Delete a yoga asana and all its associated images.
         
-        Args:
-            asana_id (int): ID of the asana to delete
+        Request JSON Body:
+            asana_id (int): ID of the asana to delete (required)
             
         Returns:
             JSON response confirming deletion or error message.
         """
         try:
+            data = request.get_json()
+            if not data or not data.get('asana_id'):
+                return jsonify({'error': 'Asana ID is required', 'status': 'fail'}), 400
+            
+            asana_id = data.get('asana_id')
             asana = YogaAsana.query.get(asana_id)
             if not asana:
                 return jsonify({'error': 'Asana not found', 'status': 'fail'}), 404
@@ -330,20 +360,27 @@ def asana_routes(app):
             return jsonify({'error': f'Error deleting asana: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas/<int:asana_id>/images/<int:image_id>', methods=['DELETE'])
+    @app.route('/api/asanas/delete-image', methods=['POST'])
     @swag_from("docs/delete_asana_image.yml")
-    def delete_asana_image(asana_id, image_id):
+    def delete_asana_image():
         """
         Delete a specific image from an asana.
         
-        Args:
-            asana_id (int): ID of the asana
-            image_id (int): ID of the image to delete
+        Request JSON Body:
+            asana_id (int): ID of the asana (required)
+            image_id (int): ID of the image to delete (required)
             
         Returns:
             JSON response confirming deletion or error message.
         """
         try:
+            data = request.get_json()
+            if not data or not data.get('asana_id') or not data.get('image_id'):
+                return jsonify({'error': 'Both asana_id and image_id are required', 'status': 'fail'}), 400
+            
+            asana_id = data.get('asana_id')
+            image_id = data.get('image_id')
+            
             # Check if asana exists
             asana = YogaAsana.query.get(asana_id)
             if not asana:
@@ -371,13 +408,13 @@ def asana_routes(app):
             return jsonify({'error': f'Error deleting image: {str(e)}', 'status': 'fail'}), 500
     
     
-    @app.route('/api/asanas/search', methods=['GET'])
+    @app.route('/api/asanas/search-advanced', methods=['POST'])
     @swag_from("docs/search_asanas.yml")
     def search_asanas():
         """
         Search yoga asanas by name, Sanskrit name, or description.
         
-        Query Parameters:
+        Request JSON Body:
             q (str): Search query
             difficulty (str): Filter by difficulty level
             limit (int): Maximum number of results to return
@@ -386,9 +423,11 @@ def asana_routes(app):
             JSON response with matching asanas.
         """
         try:
-            search_query = request.args.get('q', '').strip()
-            difficulty = request.args.get('difficulty')
-            limit = request.args.get('limit', type=int, default=20)
+            data = request.get_json() or {}
+            
+            search_query = data.get('q', '').strip()
+            difficulty = data.get('difficulty')
+            limit = data.get('limit', 20)
             
             if not search_query:
                 return jsonify({'error': 'Search query is required', 'status': 'fail'}), 400
