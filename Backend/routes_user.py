@@ -307,10 +307,10 @@ def routes_user(app, db):
         try:
             data = request.get_json()
             
-            if not data.get('user_name') or not data.get('password'):
+            if not data.get('email') or not data.get('password'):
                 return jsonify({'error': 'Username and password are required', 'status': 'fail'}), 400
             
-            user = User.query.filter_by(user_name=data['user_name']).first()
+            user = User.query.filter_by(email=data['email']).first()
             
             if not user or not user.check_password(data['password']):
                 return jsonify({'error': 'Invalid credentials', 'status': 'fail'}), 401
