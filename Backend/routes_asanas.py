@@ -241,7 +241,7 @@ def asana_routes(app):
 
     @app.route('/api/asanas-name', methods=['POST'])
     @swag_from("docs/get_asana_by_id.yml")
-    def get_asana_by_id(asana_name):
+    def get_asana_by_name_alt(asana_name):
         """
         Get a specific yoga asana by name.
 

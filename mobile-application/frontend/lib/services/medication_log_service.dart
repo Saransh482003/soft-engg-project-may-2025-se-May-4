@@ -246,7 +246,7 @@ class MedicationLogService {
     print('🔍 medication_logs raw JSON: $logsJson');
     
     try {
-      List<dynamic> logsList = jsonDecode(logsJson);
+      List<dynamic> logsList = jsonDecode(logsJson ?? '[]');
       print('🔍 Parsed logs count: ${logsList.length}');
       print('🔍 Parsed logs: $logsList');
     } catch (e) {

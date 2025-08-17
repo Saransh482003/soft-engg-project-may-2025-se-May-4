@@ -364,7 +364,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 // Gender dropdown
                 DropdownButtonFormField<String>(
-                  value: _gender,
+                  initialValue: _gender,
                   decoration: InputDecoration(
                     labelText: 'Gender',
                     labelStyle: TextStyle(color: Colors.grey[600]),

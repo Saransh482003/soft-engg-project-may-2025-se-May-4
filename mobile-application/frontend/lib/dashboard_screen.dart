@@ -200,6 +200,266 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       print('Error showing data dialog: $e');
     }
   }
+
+  Future<void> _generateFakeAnalyticsData() async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(ThemeConstants.primaryColor),
+              ),
+              const SizedBox(height: 16),
+              const Text('Generating demo analytics data...'),
+              const SizedBox(height: 8),
+              Text(
+                'This will create sample medications and prescriptions\nfor testing the analytics dashboard',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+
+      // Generate fake data
+      final success = await DataStorageService.generateFakeAnalyticsData();
+
+      // Close loading dialog
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      if (success) {
+        // Refresh the UI data
+        await _fetchUserData();
+        await _fetchReminders();
+
+        // Show success dialog with analytics summary
+        final analyticsData = await DataStorageService.getAnalyticsData();
+        
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.analytics_rounded,
+                    color: Colors.green[600],
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Demo Data Generated!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Successfully generated sample analytics data:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Analytics summary
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue[200]!),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.medication_liquid, 
+                              color: ThemeConstants.primaryColor, size: 18),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Medication Summary',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text('• Total Medications: ${analyticsData['summary']['total_medications']}'),
+                        Text('• Taken: ${analyticsData['summary']['taken_medications']}'),
+                        Text('• Missed: ${analyticsData['summary']['missed_medications']}'),
+                        Text('• Adherence Rate: ${analyticsData['summary']['adherence_rate']}%'),
+                        Text('• Active Prescriptions: ${analyticsData['summary']['total_prescriptions']}'),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.timeline, 
+                              color: Colors.orange[600], size: 18),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Generated Data Includes',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text('• 30 days of medication logs'),
+                        const Text('• 8 sample prescriptions'),
+                        const Text('• Weekly and monthly trends'),
+                        const Text('• Time-of-day analysis'),
+                        const Text('• Medicine frequency data'),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  Text(
+                    'This data can be used for testing analytics features and will be visible in the medication logs screen.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  // Clear fake data option
+                  final shouldClear = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Clear Demo Data'),
+                      content: const Text('Do you want to remove the generated demo data?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Keep'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Clear'),
+                        ),
+                      ],
+                    ),
+                  );
+                  
+                  if (shouldClear == true) {
+                    await DataStorageService.clearFakeData();
+                    await _fetchUserData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Demo data cleared successfully'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Clear Demo Data',
+                  style: TextStyle(color: Colors.orange[600]),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ThemeConstants.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Got it!',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.error, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Failed to generate demo data'),
+              ],
+            ),
+            backgroundColor: ThemeConstants.secondaryColor,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog if it's open
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(child: Text('Error generating demo data: $e')),
+            ],
+          ),
+          backgroundColor: ThemeConstants.secondaryColor,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 Future<void> _deletePrescription(String presId, String medicineName) async {
   try {
     // Show confirmation dialog
@@ -492,6 +752,17 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
                   setState(() => _showNotificationsDropdown = true);
                 }
               },
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.analytics_rounded, color: Colors.white, size: 24),
+              onPressed: _generateFakeAnalyticsData,
             ),
           ),
           Container(
