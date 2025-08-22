@@ -301,12 +301,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
                             Icon(Icons.medication_liquid, 
                               color: ThemeConstants.primaryColor, size: 18),
-                            const SizedBox(width: 6),
-                            const Text(
+                            SizedBox(width: 6),
+                            Text(
                               'Medication Summary',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -426,8 +426,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       } else {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
+          const SnackBar(
+            content: Row(
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 8),
@@ -435,7 +435,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               ],
             ),
             backgroundColor: ThemeConstants.secondaryColor,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -1437,7 +1437,7 @@ Future<void> _deletePrescription(String presId, String medicineName) async {
           elevation: 0,
           icon: const Icon(Icons.add_rounded, color: Colors.white, size: 24),
           label: const Text(
-            'Add Prescription',
+            'Add Medication',
             style: TextStyle(
               color: Colors.white, 
               fontWeight: FontWeight.bold,

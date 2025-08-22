@@ -731,7 +731,7 @@ class DataStorageService {
             'notes': action == 'taken' 
               ? delayMinutes == 0 
                 ? 'Taken on time' 
-                : 'Taken ${delayMinutes} minutes late'
+                : 'Taken $delayMinutes minutes late'
               : 'Missed - ${_getRandomMissReason(random + day + entry)}',
             'timestamp': actualTime.millisecondsSinceEpoch,
             'day_of_week': logDate.weekday,

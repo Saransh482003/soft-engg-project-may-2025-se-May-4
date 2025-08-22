@@ -197,12 +197,12 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
                             Icon(Icons.assessment, 
                               color: ThemeConstants.primaryColor, size: 18),
-                            const SizedBox(width: 6),
-                            const Text(
+                            SizedBox(width: 6),
+                            Text(
                               'Adherence Summary (90 days)',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -322,8 +322,8 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
       } else {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
+          const SnackBar(
+            content: Row(
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 8),
@@ -331,7 +331,7 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
               ],
             ),
             backgroundColor: ThemeConstants.secondaryColor,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -385,7 +385,7 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
                   style: TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'DataStorageService Summary:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -395,11 +395,11 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
                 const SizedBox(height: 16),
                 Text(
                   'Current Logs: ${_logs.length}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
                   'Current Stats: $_stats',
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ],
             ),
@@ -530,9 +530,9 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
                             Icon(_getPatternIcon(pattern), 
                               color: _getPatternColor(pattern), size: 18),
                             const SizedBox(width: 6),
-                            Text(
+                            const Text(
                               'Pattern Summary (30 days)',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -591,8 +591,8 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
       } else {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
+          const SnackBar(
+            content: Row(
               children: [
                 Icon(Icons.error, color: Colors.white),
                 SizedBox(width: 8),
@@ -600,7 +600,7 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
               ],
             ),
             backgroundColor: ThemeConstants.secondaryColor,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -684,7 +684,7 @@ class _MedicationLogsScreenState extends State<MedicationLogsScreen>
           'notes': action == 'taken' 
             ? delayMinutes == 0 
               ? 'Taken on time' 
-              : 'Taken ${delayMinutes} minutes late'
+              : 'Taken $delayMinutes minutes late'
             : 'Missed - ${_getPatternMissReason(pattern, random + day + dose)}',
           'timestamp': actualTime.millisecondsSinceEpoch,
           'day_of_week': logDate.weekday,
