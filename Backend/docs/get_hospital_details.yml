@@ -1,0 +1,97 @@
+summary: Get hospital details by ID
+description: Retrieve detailed information about a specific hospital including all doctors
+tags:
+  - Hospitals
+parameters:
+  - name: hospital_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the hospital to retrieve
+responses:
+  200:
+    description: Successfully retrieved hospital details
+    schema:
+      type: object
+      properties:
+        hospital_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "City General Hospital"
+        address:
+          type: string
+          example: "123 Main St, City, State, 12345"
+        phone:
+          type: string
+          example: "+1-234-567-8900"
+        website:
+          type: string
+          example: "https://citygeneral.com"
+        rating:
+          type: number
+          format: float
+          example: 4.2
+        num_ratings:
+          type: integer
+          example: 350
+        type:
+          type: string
+          example: "General Hospital"
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              format: float
+              example: 40.7128
+            longitude:
+              type: number
+              format: float
+              example: -74.0060
+        doctors:
+          type: array
+          items:
+            type: object
+            properties:
+              doctor_id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "Dr. John Smith"
+              specialization:
+                type: string
+                example: "Cardiology"
+              experience:
+                type: integer
+                example: 15
+              rating:
+                type: number
+                format: float
+                example: 4.5
+        total_doctors:
+          type: integer
+          example: 25
+        specializations:
+          type: array
+          items:
+            type: string
+          example: ["Cardiology", "Neurology", "Orthopedics", "Dermatology"]
+  404:
+    description: Hospital not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Hospital not found"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Failed to fetch hospital details"

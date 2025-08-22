@@ -391,7 +391,7 @@ def function_routes(app, db, auth):
 
 
     @app.route('/api/pharmacy-finder', methods=['POST'])
-    @swag_from("docs/pharmacy-finder.yml")
+    @swag_from("docs/pharmacy_finder.yml")
     def pharmacy_finder():
         """
         Handles requests to find nearby pharmacies (or other specified place types) based on provided latitude and longitude.
@@ -484,6 +484,7 @@ def function_routes(app, db, auth):
             return jsonify({'error': f"An unexpected error occurred: {str(e)}", 'status': 'fail'}), 500
 
     @app.route("/api/generate-asana-images", methods=["POST"])
+    @swag_from("docs/generate_asana_images.yml")
     def generate_asana_images():
         data = request.get_json()
         asana_name = data.get("asana_name")

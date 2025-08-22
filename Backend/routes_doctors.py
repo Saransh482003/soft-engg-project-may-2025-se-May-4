@@ -44,6 +44,7 @@ def routes_doctors(app, db):
 
     # Get detailed information about a specific doctor
     @app.route('/api/doctors/<int:doctor_id>', methods=['GET'])
+    @swag_from("docs/get_doctor_details.yml")
     def get_doctor_details(doctor_id):
         try:
             doctor = Doctors.query.get(doctor_id)
@@ -78,6 +79,7 @@ def routes_doctors(app, db):
 
     # Get detailed hospital information
     @app.route('/api/hospitals/<int:hospital_id>', methods=['GET'])
+    @swag_from("docs/get_hospital_details.yml")
     def get_hospital_details(hospital_id):
         try:
             hospital = Hospitals.query.get(hospital_id)
@@ -117,6 +119,7 @@ def routes_doctors(app, db):
 
     # Scrape doctor information from hospital website
     @app.route('/api/hospitals/<int:hospital_id>/scrape-doctors', methods=['POST'])
+    @swag_from("docs/scrape_hospital_doctors.yml")
     def scrape_hospital_doctors(hospital_id):
         try:
             hospital = Hospitals.query.get(hospital_id)

@@ -1,0 +1,67 @@
+summary: Create a new yoga video
+description: Add a new yoga video to the content database
+tags:
+  - Content Management
+  - Yoga Videos
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - title
+        - video_url
+      properties:
+        title:
+          type: string
+          description: Title of the yoga video
+          example: "Morning Sun Salutation"
+        description:
+          type: string
+          description: Description of the yoga video
+          example: "A gentle morning routine to start your day with energy"
+        video_url:
+          type: string
+          format: uri
+          description: URL of the video (YouTube, Vimeo, etc.)
+          example: "https://youtube.com/watch?v=example"
+        difficulty:
+          type: string
+          enum: ["Beginner", "Intermediate", "Advanced"]
+          description: Difficulty level of the video
+          example: "Beginner"
+        duration:
+          type: integer
+          description: Duration of the video in minutes
+          example: 15
+responses:
+  201:
+    description: Yoga video created successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Yoga video created"
+        id:
+          type: integer
+          example: 1
+  400:
+    description: Bad request - missing required fields
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Title and video URL are required"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error creating yoga video"

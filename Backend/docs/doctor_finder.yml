@@ -1,0 +1,103 @@
+summary: Find nearby doctors
+description: Find nearby doctors based on location and specialty
+tags:
+  - Healthcare Services
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: float
+          description: Latitude of the user's location
+          example: 40.7128
+        longitude:
+          type: number
+          format: float
+          description: Longitude of the user's location
+          example: -74.0060
+        type:
+          type: string
+          description: Type of place to search for (e.g., 'hospital', 'clinic')
+          default: "hospital"
+          example: "hospital"
+        radius:
+          type: integer
+          description: Search radius in meters
+          default: 1000
+          example: 1000
+        specialist:
+          type: string
+          description: Medical specialty to search for
+          default: "obstetrician"
+          example: "cardiologist"
+responses:
+  200:
+    description: Successfully found nearby doctors
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        doctors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Dr. John Smith"
+              specialty:
+                type: string
+                example: "Cardiology"
+              address:
+                type: string
+                example: "123 Main St, City, State"
+              phone:
+                type: string
+                example: "+1-234-567-8900"
+              distance:
+                type: number
+                format: float
+                example: 2.5
+              rating:
+                type: number
+                format: float
+                example: 4.5
+              place_id:
+                type: string
+                example: "ChIJN1t_tDeuEmsRUsoyG83frY4"
+        count:
+          type: integer
+          example: 15
+  400:
+    description: Bad request - missing required parameters
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Latitude and longitude are required"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error searching for doctors"
+        status:
+          type: string
+          example: "fail"

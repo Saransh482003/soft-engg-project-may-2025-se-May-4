@@ -1,0 +1,66 @@
+summary: Update a yoga video
+description: Update an existing yoga video's information
+tags:
+  - Content Management
+  - Yoga Videos
+consumes:
+  - application/json
+parameters:
+  - name: video_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the video to update
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the yoga video
+          example: "Evening Relaxation Yoga"
+        description:
+          type: string
+          description: Description of the yoga video
+          example: "A calming evening routine to unwind and relax"
+        video_url:
+          type: string
+          format: uri
+          description: URL of the video
+          example: "https://youtube.com/watch?v=updated"
+        difficulty:
+          type: string
+          enum: ["Beginner", "Intermediate", "Advanced"]
+          description: Difficulty level of the video
+          example: "Intermediate"
+        duration:
+          type: integer
+          description: Duration of the video in minutes
+          example: 20
+responses:
+  200:
+    description: Yoga video updated successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Yoga video updated"
+  404:
+    description: Video not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Video not found"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error updating yoga video"

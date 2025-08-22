@@ -1,0 +1,105 @@
+summary: Find nearby pharmacies
+description: Find nearby pharmacies based on location
+tags:
+  - Healthcare Services
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: float
+          description: Latitude of the user's location
+          example: 40.7128
+        longitude:
+          type: number
+          format: float
+          description: Longitude of the user's location
+          example: -74.0060
+        type:
+          type: string
+          description: Type of place to search for
+          default: "pharmacy"
+          example: "pharmacy"
+        radius:
+          type: integer
+          description: Search radius in meters
+          default: 1000
+          example: 1000
+responses:
+  200:
+    description: Successfully found nearby pharmacies
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        pharmacies:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "CVS Pharmacy"
+              address:
+                type: string
+                example: "456 Oak Ave, City, State"
+              phone:
+                type: string
+                example: "+1-234-567-8901"
+              distance:
+                type: number
+                format: float
+                example: 1.2
+              rating:
+                type: number
+                format: float
+                example: 4.2
+              place_id:
+                type: string
+                example: "ChIJN1t_tDeuEmsRUsoyG83frY5"
+              opening_hours:
+                type: object
+                properties:
+                  open_now:
+                    type: boolean
+                    example: true
+                  periods:
+                    type: array
+                    items:
+                      type: object
+        count:
+          type: integer
+          example: 8
+  400:
+    description: Bad request - missing required parameters
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Latitude and longitude are required"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error searching for pharmacies"
+        status:
+          type: string
+          example: "fail"

@@ -1,0 +1,102 @@
+summary: Get asana by name
+description: Retrieve a specific yoga asana by its name (supports partial matching)
+tags:
+  - Asanas
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the asana to retrieve (supports partial matching)
+          example: "Mountain Pose"
+responses:
+  200:
+    description: Successfully retrieved asana
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        asana:
+          type: object
+          properties:
+            asana_id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Mountain Pose"
+            sanskrit_name:
+              type: string
+              example: "Tadasana"
+            description:
+              type: string
+              example: "A foundational standing pose that improves posture and balance"
+            difficulty:
+              type: string
+              example: "Beginner"
+            duration_minutes:
+              type: integer
+              example: 2
+            benefits:
+              type: string
+              example: "Improves posture, strengthens legs, enhances balance"
+            instructions:
+              type: string
+              example: "Stand tall with feet hip-width apart, arms at sides..."
+            images:
+              type: array
+              items:
+                type: object
+                properties:
+                  image_id:
+                    type: integer
+                    example: 1
+                  image_url:
+                    type: string
+                    example: "https://example.com/mountain_pose.jpg"
+                  display_order:
+                    type: integer
+                    example: 1
+  400:
+    description: Bad request - missing asana name
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana name is required"
+        status:
+          type: string
+          example: "fail"
+  404:
+    description: Asana not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Asana \"Mountain Pose\" not found"
+        status:
+          type: string
+          example: "fail"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error retrieving asana"
+        status:
+          type: string
+          example: "fail"

@@ -23,7 +23,7 @@ def routes_content(app, db):
         return jsonify({'videos': video_list}), 200
     
     @app.route('/api/yoga-videos', methods=['POST'])
-    @swag_from("docs/post_yoga_video.yml")
+    @swag_from("docs/create_yoga_video.yml")
     def create_yoga_video():
         data = request.get_json()
         video = YogaVideos(
@@ -38,7 +38,7 @@ def routes_content(app, db):
         return jsonify({'message': 'Yoga video created', 'id': video.id}), 201
 
     @app.route('/api/yoga-videos/<int:video_id>', methods=['PUT'])
-    @swag_from("docs/put_yoga_video.yml")
+    @swag_from("docs/update_yoga_video.yml")
     def update_yoga_video(video_id):
         data = request.get_json()
         video = YogaVideos.query.get_or_404(video_id)

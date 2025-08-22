@@ -1,0 +1,90 @@
+summary: Scrape hospital website for doctor information
+description: Scrape doctor information from a hospital's website using AI-powered extraction
+tags:
+  - Hospitals
+  - Web Scraping
+parameters:
+  - name: hospital_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the hospital to scrape doctors for
+responses:
+  200:
+    description: Successfully scraped doctor information
+    schema:
+      type: object
+      properties:
+        hospital_id:
+          type: integer
+          example: 1
+        hospital_name:
+          type: string
+          example: "City General Hospital"
+        scraped_doctors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Dr. John Smith"
+              specialization:
+                type: string
+                example: "Cardiology"
+              experience:
+                type: string
+                example: "15 years"
+              qualifications:
+                type: string
+                example: "MD, FACC"
+              department:
+                type: string
+                example: "Cardiology Department"
+        hospital_info:
+          type: object
+          properties:
+            description:
+              type: string
+              example: "Leading healthcare provider in the region"
+            services:
+              type: array
+              items:
+                type: string
+              example: ["Emergency Care", "Surgery", "Diagnostics"]
+            contact_info:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "info@citygeneral.com"
+                phone:
+                  type: string
+                  example: "+1-234-567-8900"
+        total_scraped:
+          type: integer
+          example: 18
+  400:
+    description: Bad request
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Hospital website not available"
+  404:
+    description: Hospital not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Hospital not found"
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Failed to scrape doctors"
