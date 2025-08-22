@@ -12,49 +12,85 @@ To empower senior citizens with technology that simplifies healthcare management
 
 ## ✨ Key Features
 
-### 📱 **Mobile Application**
-- **Modern Flutter-based Mobile App** with intuitive design
-- **Cross-platform compatibility** (Android & iOS)
-- **Accessibility-focused UI** with large fonts and clear navigation
-- **Offline capability** for essential features
+### 🤖 **Medical Assistance Chatbot**
 
-### 💊 **Medication Management**
-- **Smart Prescription Tracking** with expiry date monitoring
-- **Automated Medication Reminders** with customizable scheduling
-- **Dosage Management** with visual indicators
-- **Side Effects Tracking** and warnings
-- **Medicine Information** powered by AI (Gemini API integration)
+This is a chatbot empowered by the **Groq AI API**, which has been fine-tuned to deliver informative medical assistance to the users.
 
-### 📊 **Health Analytics & Monitoring**
-- **Comprehensive Health Dashboard** with visual charts
-- **Medication Adherence Tracking** with detailed analytics
-- **Health Trends Visualization** over time
-- **Fake Data Generation** for testing and demonstration
-- **Cross-platform Data Synchronization**
+The chatbot is not capable of providing diagnostics or other sensitive information to the user, that may require professional supervision.
 
-### 🤖 **AI-Powered Features**
-- **Personal Health Chatbot** for medical queries and guidance
-- **Medicine Information Lookup** using Google's Gemini AI
-- **Smart Health Recommendations** based on user data
-- **Intelligent Reminder Scheduling**
+- **Groq AI Integration** for intelligent medical guidance
+- **Safe Medical Information** delivery without diagnostics
+- **Interactive Q&A** for health-related queries
+- **Professional Supervision Awareness** for sensitive topics
 
-### 🧘 **Wellness & Yoga**
-- **Curated Yoga Asanas** for senior citizens
-- **Video Tutorials** with step-by-step guidance
-- **Difficulty-based Exercise Recommendations**
-- **Progress Tracking** for wellness activities
+### 🏥 **Hospital and Pharmacy Finder**
 
-### 🏥 **Healthcare Services**
-- **Doctor Search & Discovery** with location-based results
-- **Emergency Contact Management** with quick access
-- **Nearby Healthcare Facilities** finder
-- **Appointment Scheduling** assistance
+Elders often find it difficult to locate hospitals and pharmacies in their vicinity.
 
-### 🔔 **Smart Notifications**
-- **Medication Reminders** with custom time settings
-- **Health Check-up Alerts** and preventive care reminders
-- **Emergency Notifications** system
-- **Family Member Alerts** for medication adherence
+To counter this, backed by the power of **Google Maps API**, we are fetching information about the hospitals and pharmacies in a user's vicinity, for a given distance radius.
+
+We utilized the free $300 GCP credits to access the Google Maps API.
+
+- **Location-based Search** using GPS coordinates or locality names
+- **Google Maps API Integration** with $300 GCP credits utilization
+- **Customizable Distance Radius** for search results
+- **Real-time Healthcare Facility Information**
+
+### 👨‍⚕️ **Doctor & Medical Professional Finder**
+
+Building upon the hospital and pharmacy finder, we implemented the doctor finder as well, which is capable of fetching all the doctors of a certain specialty present in the user's vicinity.
+
+This enables the users to choose which doctors they should consult with.
+
+On the backend we are using the data we get from the hospital finder where, we extract the websites of all these hospitals, run a crawler that goes in **5 layers of depth** to extract the best possible urls present on the pages using **fuzzy matching**.
+
+After shortlisting the urls, their HTML bodies are scraped using **headless Selenium**, and then sent to **Groq AI** which fetches out all information from those pages and returns a list of dictionaries as a response.
+
+- **Specialty-based Doctor Search** in user's vicinity
+- **Advanced Web Crawling** with 5-layer depth analysis
+- **Fuzzy Matching Algorithm** for URL optimization
+- **Headless Selenium Scraping** for data extraction
+- **Groq AI-powered Information Processing**
+
+### 💬 **Personalised Chatbot Companion**
+
+Unlike the Medical Chatbot which is tuned just for Medical concerns, this chatbot is to counter loneliness among the elderly.
+
+Users can tailor the persona of the chatbot according to their wishes and chat with them as they wish.
+
+In the future we are going to fine-tune AI chatbots on these parameters to receive much more diverse responses from the AI.
+
+- **Customizable Chatbot Personas** for personalized interaction
+- **Loneliness Mitigation** through companionship
+- **Tailored Conversation Styles** based on user preferences
+- **Future AI Fine-tuning** for diverse responses
+
+### 🧘 **Yoga Asana Animations**
+
+Sequential images of asanas are generated manually by **ChatGPT Generative AI**.
+
+After fetching these images from the backend, they are displayed on a loop giving an impression of an animation.
+
+We are planning to add automated generative AI generation part, where user inputs the asana and it generates the images.
+
+- **ChatGPT-generated Sequential Images** for yoga poses
+- **Looped Animation Effect** for better visualization
+- **Backend Image Management** with efficient delivery
+- **Future Automation** for user-input based image generation
+
+### 💊 **Medical Adherence Assistant**
+
+A mobile application to ensure medical adherence by setting medicine reminders.
+
+To provide an ease of use to the elderly, we have enabled **speech narration** for adding new medication to the application.
+
+We are currently working on creating **analytical dashboards** to allow our secondary users to monitor the patient's adherence of medications.
+
+- **Medicine Reminder System** with customizable scheduling
+- **Speech Narration Support** for elderly accessibility
+- **Voice-enabled Medication Entry** for ease of use
+- **Analytical Dashboards** for adherence monitoring (in development)
+- **Secondary User Access** for family/caregiver monitoring
 
 ## 🏗️ Technical Architecture
 
@@ -132,7 +168,7 @@ cd frontend
 # Run the VueJS application
 npm run dev
 # or
-yarn run dev 
+yarn run dev # if your prefer yarn
 ```
 
 ### **Mobile App Setup**
